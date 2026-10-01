@@ -1,0 +1,99 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function dayId(id) { return id in ['full-a','full-b','full-c','upper-a','lower-a','upper-b','lower-b','push','pull','legs','upper','lower']; }
+    function exerciseId(id) { return id is string && id.matches('^(bench|incline|fly|row|pulldown|dbrow|press|lateral|facepull|curl|triceps|squat|rdl|legpress|lunge|legcurl|calf|deadbug|crunch)$'); }
+    function weight(value) { return value == null || (value is number && value >= 0 && value <= 1000); }
+    function validWeekdays(data) {
+      let days = data.weekdays;
+      let count = days.size();
+      return days is list && count == data.days && count in [3,4,5]
+        && days[0] is int && days[0] >= 0
+        && days[1] is int && days[1] > days[0]
+        && days[2] is int && days[2] > days[1]
+        && (count < 4 || (days[3] is int && days[3] > days[2]))
+        && (count < 5 || (days[4] is int && days[4] > days[3]))
+        && days[count - 1] <= 6;
+    }
+    function validTarget(data) {
+      return data.keys().hasAll(['id','sets','reps','weight'])
+        && data.keys().hasOnly(['id','sets','reps','weight','week'])
+        && exerciseId(data.id) && data.sets is int && data.sets >= 1 && data.sets <= 5
+        && data.reps is int && data.reps >= 1 && data.reps <= 50 && weight(data.weight)
+        && (!('week' in data) || (data.week is string && data.week.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')));
+    }
+    // Keep shape/count validation bounded; detailed numeric values are validated
+    // by the application on write and read, like the values inside each set.
+    function validExercise(target, count, shape) {
+      let prescribedSets = target.sets;
+      return shape
+        && target.size() == 3 && target.keys().hasOnly(['sets','reps','weight'])
+        && prescribedSets in [1,2,3,4,5]
+        && count == prescribedSets;
+    }
+    function validWorkout(data, id) {
+      let exercises = data.exercises;
+      let count = exercises.size();
+      let ids = [exercises[0].id,
+        count > 1 ? exercises[1].id : null,
+        count > 2 ? exercises[2].id : null,
+        count > 3 ? exercises[3].id : null,
+        count > 4 ? exercises[4].id : null,
+        count > 5 ? exercises[5].id : null,
+        count > 6 ? exercises[6].id : null,
+        count > 7 ? exercises[7].id : null].removeAll([null]);
+      return data.keys().hasOnly(['id','week','days','dayId','title','status','notes','exercises','finishedAt','revision'])
+        && data.id == id && id.matches('^[a-zA-Z0-9-]{8,80}$')
+        && data.week is string && data.week.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.days in [3,4,5] && dayId(data.dayId)
+        && data.title is string && data.title.size() <= 80 && data.status in ['completed','partial']
+        && data.notes is string && data.notes.size() <= 2000
+        && data.finishedAt is string && data.finishedAt.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}T.*Z$')
+        && exercises is list && count >= 1 && count <= 8
+        && ids.toSet().size() == count
+        && ids.hasOnly(['bench','incline','fly','row','pulldown','dbrow','press','lateral','facepull','curl','triceps','squat','rdl','legpress','lunge','legcurl','calf','deadbug','crunch'])
+        && validExercise(exercises[0].prescription, exercises[0].sets.size(), exercises[0].size() == 3 && exercises[0].sets is list)
+        && (count < 2 || validExercise(exercises[1].prescription, exercises[1].sets.size(), exercises[1].size() == 3 && exercises[1].sets is list))
+        && (count < 3 || validExercise(exercises[2].prescription, exercises[2].sets.size(), exercises[2].size() == 3 && exercises[2].sets is list))
+        && (count < 4 || validExercise(exercises[3].prescription, exercises[3].sets.size(), exercises[3].size() == 3 && exercises[3].sets is list))
+        && (count < 5 || validExercise(exercises[4].prescription, exercises[4].sets.size(), exercises[4].size() == 3 && exercises[4].sets is list))
+        && (count < 6 || validExercise(exercises[5].prescription, exercises[5].sets.size(), exercises[5].size() == 3 && exercises[5].sets is list))
+        && (count < 7 || validExercise(exercises[6].prescription, exercises[6].sets.size(), exercises[6].size() == 3 && exercises[6].sets is list))
+        && (count < 8 || validExercise(exercises[7].prescription, exercises[7].sets.size(), exercises[7].size() == 3 && exercises[7].sets is list));
+    }
+    match /users/{uid}/preferences/main {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid) && request.resource.data.keys().hasAll(['days','strategy'])
+        && request.resource.data.keys().hasOnly(['days','strategy','weekdays']) && request.resource.data.days in [3,4,5]
+        && request.resource.data.strategy in ['weight','reps','sets']
+        && (!('weekdays' in request.resource.data) || validWeekdays(request.resource.data));
+    }
+    match /users/{uid}/targets/{id} {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid) && request.resource.data.id == id && validTarget(request.resource.data);
+    }
+    match /users/{uid}/routines/{id} {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid) && dayId(id) && request.resource.data.id == id
+        && request.resource.data.keys().hasOnly(['id','exerciseIds'])
+        && request.resource.data.exerciseIds is list
+        && request.resource.data.exerciseIds.size() >= 1 && request.resource.data.exerciseIds.size() <= 8
+        && request.resource.data.exerciseIds.toSet().size() == request.resource.data.exerciseIds.size()
+        && request.resource.data.exerciseIds.hasOnly(['bench','incline','fly','row','pulldown','dbrow','press','lateral','facepull','curl','triceps','squat','rdl','legpress','lunge','legcurl','calf','deadbug','crunch']);
+    }
+    // Workout numeric values are fully validated by the client on write and read.
+    // Rules enforce owner access, document shape, exercise IDs, bounded counts,
+    // preserved metadata, and revisions within Firestore's expression budget.
+    match /users/{uid}/workouts/{id} {
+      allow read: if owner(uid);
+      allow create: if request.method == 'create' && owner(uid) && validWorkout(request.resource.data, id)
+        && (!('revision' in request.resource.data) || (request.resource.data.revision is int && request.resource.data.revision == 0));
+      allow update: if request.method == 'update' && owner(uid) && validWorkout(request.resource.data, id)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['notes','status','exercises','revision'])
+        && request.resource.data.revision is int
+        && request.resource.data.revision == resource.data.get('revision', 0) + 1;
+      allow delete: if owner(uid);
+    }
+  }
+}

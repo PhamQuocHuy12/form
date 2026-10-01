@@ -1,30 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Activity,
+  ArrowDown,
+  ArrowUp,
   Check,
   CheckCheck,
   ChevronDown,
   Clock3,
   Dumbbell,
+  GripVertical,
   History,
   Pause,
+  Pencil,
   Play,
+  Plus,
   RotateCcw,
   Save,
   Target,
   TrendingUp,
   Trophy,
+  Trash2,
   X,
 } from "lucide-react";
 import {
   EXERCISES,
   PLANS,
   MUSCLES,
+  MAX_EXERCISES,
   prescriptions,
   records,
   volume,
   shiftDate,
+  WEEKDAYS,
+  trainingPlan,
 } from "../shared/training.mjs";
+import { useExerciseDrag } from "./use-exercise-drag.js";
 
 export function Modal({ title, onClose, children, wide = false }) {
   const panel = useRef(null);
@@ -85,11 +95,24 @@ export function Modal({ title, onClose, children, wide = false }) {
   );
 }
 export function SettingsModal({ settings, save, onClose }) {
-  const [draft, setDraft] = useState(settings);
+  const [draft, setDraft] = useState(() => ({
+    ...settings,
+    weekdays: trainingPlan(settings).map((day) => day.weekday),
+  }));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const scheduleReady = draft.weekdays.length === draft.days;
+  function toggleWeekday(day) {
+    setDraft((current) => ({
+      ...current,
+      weekdays: current.weekdays.includes(day)
+        ? current.weekdays.filter((value) => value !== day)
+        : [...current.weekdays, day].sort((a, b) => a - b),
+    }));
+  }
   async function submit(e) {
     e.preventDefault();
+    if (!scheduleReady) return;
     setBusy(true);
     setError("");
     try {
@@ -116,7 +139,14 @@ export function SettingsModal({ settings, save, onClose }) {
                 type="button"
                 key={days}
                 aria-pressed={days === draft.days}
-                onClick={() => setDraft({ ...draft, days })}
+                onClick={() => {
+                  if (days !== draft.days)
+                    setDraft({
+                      ...draft,
+                      days,
+                      weekdays: PLANS[days].map((day) => day.weekday),
+                    });
+                }}
                 className={days === draft.days ? "chosen" : ""}
               >
                 <strong>{days}</strong>
@@ -130,6 +160,47 @@ export function SettingsModal({ settings, save, onClose }) {
               </button>
             ))}
           </div>
+        </fieldset>
+        <fieldset className="schedule-options">
+          <legend>Your training weekdays</legend>
+          <p className="form-hint" id="weekday-hint">
+            Choose {draft.days} days. Workouts follow the order shown below,
+            every week.
+          </p>
+          <div className="weekday-options" aria-describedby="weekday-hint">
+            {WEEKDAYS.map((name, index) => (
+              <button
+                type="button"
+                key={name}
+                aria-label={name}
+                aria-pressed={draft.weekdays.includes(index)}
+                className={draft.weekdays.includes(index) ? "chosen" : ""}
+                onClick={() => toggleWeekday(index)}
+              >
+                {name.slice(0, 3)}
+              </button>
+            ))}
+          </div>
+          <p
+            className={`schedule-count ${scheduleReady ? "ready" : ""}`}
+            role="status"
+          >
+            {draft.weekdays.length} of {draft.days} days selected
+            {!scheduleReady && ` — select exactly ${draft.days} to save.`}
+          </p>
+          {scheduleReady && (
+            <ul
+              className="schedule-preview"
+              aria-label="Weekly schedule preview"
+            >
+              {trainingPlan(draft).map((day) => (
+                <li key={day.id}>
+                  <span>{WEEKDAYS[day.weekday]}</span>
+                  <strong>{day.title}</strong>
+                </li>
+              ))}
+            </ul>
+          )}
         </fieldset>
         <fieldset className="strategy-options">
           <legend>How you want to progress</legend>
@@ -171,11 +242,308 @@ export function SettingsModal({ settings, save, onClose }) {
             {error}
           </p>
         )}
-        <button className="button primary full-width" disabled={busy}>
+        <button
+          className="button primary full-width"
+          disabled={busy || !scheduleReady}
+        >
           {busy ? "Saving…" : "Save my plan"}
           <Check size={17} />
         </button>
       </form>
+    </Modal>
+  );
+}
+export function ExercisePlanModal({ day, save, onClose }) {
+  const [ids, setIds] = useState(() =>
+    day.exercises.map((exercise) => exercise.id),
+  );
+  const [addition, setAddition] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const { listRef, drag, announcement, handleProps } = useExerciseDrag(
+    ids,
+    setIds,
+    busy,
+  );
+  const options = Object.values(EXERCISES);
+  function move(index, offset) {
+    setIds((current) => {
+      const next = [...current];
+      [next[index], next[index + offset]] = [next[index + offset], next[index]];
+      return next;
+    });
+  }
+  async function submit(e) {
+    e.preventDefault();
+    if (drag) return;
+    setBusy(true);
+    setError("");
+    try {
+      await save({ id: day.id, exerciseIds: ids });
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <Modal title={`Exercises · ${day.title}`} onClose={onClose} wide>
+      <p id="exercise-order-hint">
+        Choose 1–{MAX_EXERCISES} exercises. Drag the grip to reorder, or use the
+        arrows. New sessions use this list.
+      </p>
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {announcement}
+      </p>
+      <form onSubmit={submit}>
+        <fieldset disabled={busy}>
+          <legend>Exercise order</legend>
+          <ol
+            className={`routine-editor ${drag ? "is-reordering" : ""}`}
+            ref={listRef}
+          >
+            {ids.map((id, index) => (
+              <li
+                key={id}
+                className={[
+                  drag?.id === id ? "drag-origin" : "",
+                  drag?.targetIndex === index && drag.targetIndex < drag.index
+                    ? "drop-before"
+                    : "",
+                  drag?.targetIndex === index && drag.targetIndex > drag.index
+                    ? "drop-after"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <div className="routine-choice">
+                  <button
+                    type="button"
+                    className="icon-button routine-grip"
+                    aria-label={`Drag ${EXERCISES[id].name} to reorder`}
+                    aria-describedby="exercise-order-hint"
+                    aria-keyshortcuts="ArrowUp ArrowDown"
+                    title="Drag to reorder, or press the up and down arrow keys"
+                    disabled={ids.length < 2}
+                    {...handleProps(id, index)}
+                  >
+                    <GripVertical size={19} />
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                  </button>
+                  <label>
+                    <span className="sr-only">Exercise {index + 1}</span>
+                    <select
+                      aria-label={`Exercise ${index + 1}`}
+                      value={id}
+                      disabled={Boolean(drag)}
+                      onChange={(e) =>
+                        setIds((current) =>
+                          current.map((value, i) =>
+                            i === index ? e.target.value : value,
+                          ),
+                        )
+                      }
+                    >
+                      {MUSCLES.map((muscle) => (
+                        <optgroup key={muscle} label={muscle}>
+                          {options
+                            .filter((exercise) => exercise.muscle === muscle)
+                            .map((exercise) => (
+                              <option
+                                key={exercise.id}
+                                value={exercise.id}
+                                disabled={
+                                  exercise.id !== id &&
+                                  ids.includes(exercise.id)
+                                }
+                              >
+                                {exercise.name}
+                              </option>
+                            ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="routine-actions">
+                  <small>
+                    {EXERCISES[id].muscle} · {EXERCISES[id].equipment}
+                  </small>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    aria-label={`Move ${EXERCISES[id].name} up`}
+                    disabled={Boolean(drag) || index === 0}
+                    onClick={() => move(index, -1)}
+                  >
+                    <ArrowUp size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    aria-label={`Move ${EXERCISES[id].name} down`}
+                    disabled={Boolean(drag) || index === ids.length - 1}
+                    onClick={() => move(index, 1)}
+                  >
+                    <ArrowDown size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-button danger-text"
+                    aria-label={`Remove ${EXERCISES[id].name}`}
+                    disabled={Boolean(drag) || ids.length === 1}
+                    onClick={() =>
+                      setIds((current) => current.filter((_, i) => i !== index))
+                    }
+                  >
+                    <Trash2 size={17} />
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="routine-add">
+            <label>
+              Add a movement
+              <select
+                aria-label="Add a movement"
+                value={addition}
+                onChange={(e) => setAddition(e.target.value)}
+                disabled={Boolean(drag) || ids.length >= MAX_EXERCISES}
+              >
+                <option value="">Choose an exercise</option>
+                {MUSCLES.map((muscle) => (
+                  <optgroup key={muscle} label={muscle}>
+                    {options
+                      .filter(
+                        (exercise) =>
+                          exercise.muscle === muscle &&
+                          !ids.includes(exercise.id),
+                      )
+                      .map((exercise) => (
+                        <option key={exercise.id} value={exercise.id}>
+                          {exercise.name}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              className="button secondary"
+              disabled={
+                Boolean(drag) ||
+                !addition ||
+                ids.includes(addition) ||
+                ids.length >= MAX_EXERCISES
+              }
+              onClick={() => {
+                setIds((current) => [...current, addition]);
+                setAddition("");
+              }}
+            >
+              <Plus size={16} />
+              Add exercise
+            </button>
+          </div>
+          <p className="form-hint">
+            {ids.length} / {MAX_EXERCISES} exercises ·{" "}
+            {[...new Set(ids.map((id) => EXERCISES[id].muscle))].join(", ")}
+          </p>
+          <button
+            type="button"
+            className="button secondary full-width"
+            disabled={Boolean(drag)}
+            onClick={() => {
+              setIds(
+                Object.values(PLANS)
+                  .flat()
+                  .find((value) => value.id === day.id)
+                  .exercises.map((exercise) => exercise.id),
+              );
+              setAddition("");
+            }}
+          >
+            Restore template exercises
+          </button>
+        </fieldset>
+        {error && (
+          <p role="alert" className="form-error">
+            {error}
+          </p>
+        )}
+        <button
+          className="button primary full-width"
+          disabled={busy || Boolean(drag)}
+        >
+          {busy ? "Saving…" : "Save exercises"}
+          <Check size={17} />
+        </button>
+      </form>
+      {drag && (
+        <div
+          className="routine-drag-preview"
+          aria-hidden="true"
+          style={{ top: drag.top, left: drag.left, width: drag.width }}
+        >
+          <GripVertical size={22} />
+          <div>
+            <strong>{EXERCISES[drag.id].name}</strong>
+            <small>
+              {EXERCISES[drag.id].muscle} · Position {drag.targetIndex + 1} of{" "}
+              {ids.length}
+            </small>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+export function DeleteWorkoutModal({ workout, remove, onClose }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function submit() {
+    setBusy(true);
+    setError("");
+    try {
+      await remove(workout);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <Modal title="Delete workout?" onClose={busy ? () => {} : onClose}>
+      <p>
+        <strong className="bright">{workout.title}</strong> ·{" "}
+        {new Date(workout.finishedAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+        <br />
+        This removes the workout from your history and recalculates your
+        progress and personal records. This cannot be undone.
+      </p>
+      {error && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
+      <div className="history-actions">
+        <button className="button secondary" disabled={busy} onClick={onClose}>
+          Cancel
+        </button>
+        <button className="button danger" disabled={busy} onClick={submit}>
+          <Trash2 size={17} />
+          {busy ? "Deleting…" : "Delete permanently"}
+        </button>
+      </div>
     </Modal>
   );
 }
@@ -296,7 +664,13 @@ export function createSession(day, week, state) {
     }),
   };
 }
-export function SessionModal({ session, setSession, save, onClose }) {
+export function SessionModal({
+  session,
+  setSession,
+  save,
+  onClose,
+  editing = false,
+}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(0);
@@ -365,10 +739,15 @@ export function SessionModal({ session, setSession, save, onClose }) {
     }
   }
   return (
-    <Modal title={session.title} onClose={onClose} wide>
+    <Modal
+      title={editing ? `Edit ${session.title}` : session.title}
+      onClose={onClose}
+      wide
+    >
       <div className="session-intro">
         <span>
-          <span className="live-dot" /> WORKOUT IN PROGRESS
+          <span className="live-dot" />{" "}
+          {editing ? "EDITING SAVED WORKOUT" : "WORKOUT IN PROGRESS"}
         </span>
         <span>
           {completed} / {total} sets
@@ -378,161 +757,226 @@ export function SessionModal({ session, setSession, save, onClose }) {
         <span style={{ width: `${(completed / total) * 100}%` }} />
       </div>
       <p className="form-hint">
-        Enter what you actually lift, then check off each set. Your unfinished
-        session stays in this tab when you close it.
+        {editing
+          ? `Correct your sets, weights, reps, and notes. Originally logged ${new Date(session.finishedAt).toLocaleDateString()}.`
+          : "Enter what you actually lift, then check off each set. Your unfinished session stays in this tab when you close it."}
       </p>
-      <div className="rest-timer">
-        <Clock3 size={18} />
-        <strong>
-          {String(Math.floor(timer / 60)).padStart(2, "0")}:
-          {String(timer % 60).padStart(2, "0")}
-        </strong>
-        <span>
-          {running
-            ? "Rest. Breathe. Reset."
-            : timer
-              ? "Timer paused"
-              : "Rest timer"}
-        </span>
-        <button
-          type="button"
-          className="icon-button"
-          aria-label={running ? "Pause timer" : "Start timer"}
-          onClick={() =>
-            running ? setRunning(false) : startTimer(timer || 60)
-          }
-        >
-          {running ? <Pause size={18} /> : <Play size={18} />}
-        </button>
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="Reset timer"
-          onClick={() => {
-            setRunning(false);
-            setTimer(0);
-          }}
-        >
-          <RotateCcw size={17} />
-        </button>
-      </div>
-      <form onSubmit={finish}>
-        {session.exercises.map((e, i) => {
-          const exercise = EXERCISES[e.id];
-          const allDone = e.sets.every((s) => s.done);
-          return (
-            <details className="log-exercise" key={e.id} open>
-              <summary>
-                <span className={`log-ex-number ${allDone ? "is-done" : ""}`}>
-                  {allDone ? (
-                    <Check size={16} />
-                  ) : (
-                    String(i + 1).padStart(2, "0")
-                  )}
-                </span>
-                <span>
-                  <strong>{exercise.name}</strong>
-                  <small>
-                    {exercise.muscle} · {exercise.rest}s rest
-                  </small>
-                </span>
-                <ChevronDown size={17} />
-              </summary>
-              <div className="log-exercise-body">
-                <p>{exercise.tip}</p>
-                <div className="set-grid set-labels">
-                  <span>SET</span>
-                  <span>KG</span>
-                  <span>REPS</span>
-                  <span>DONE</span>
-                </div>
-                {e.sets.map((set, j) => (
-                  <div
-                    className={`set-grid ${set.done ? "set-done" : ""}`}
-                    key={j}
-                  >
-                    <span>{j + 1}</span>
-                    <input
-                      aria-label={`${exercise.name} set ${j + 1} weight`}
-                      type="number"
-                      inputMode="decimal"
-                      min="0"
-                      max="1000"
-                      step="0.25"
-                      placeholder="—"
-                      value={set.weight ?? ""}
-                      onChange={(ev) =>
-                        updateSet(i, j, { weight: ev.target.value })
-                      }
-                    />
-                    <input
-                      aria-label={`${exercise.name} set ${j + 1} reps`}
-                      type="number"
-                      inputMode="numeric"
-                      min="1"
-                      max="100"
-                      required
-                      value={set.reps}
-                      onChange={(ev) =>
-                        updateSet(i, j, { reps: ev.target.value })
-                      }
-                    />
-                    <label className="set-check">
-                      <input
-                        type="checkbox"
-                        aria-label={`Complete ${exercise.name} set ${j + 1}`}
-                        checked={set.done}
-                        onChange={(ev) => {
-                          updateSet(i, j, { done: ev.target.checked });
-                          if (ev.target.checked) startTimer(exercise.rest);
-                        }}
-                      />
-                      <span>
-                        <Check size={17} />
-                      </span>
-                    </label>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  className="complete-exercise"
-                  onClick={() => {
-                    setSession((old) => ({
-                      ...old,
-                      exercises: old.exercises.map((item, j) =>
-                        i === j
-                          ? {
-                              ...item,
-                              sets: item.sets.map((s) => ({
-                                ...s,
-                                done: !allDone,
-                              })),
-                            }
-                          : item,
-                      ),
-                    }));
-                    if (!allDone) startTimer(exercise.rest);
-                  }}
-                >
-                  <CheckCheck size={16} />
-                  {allDone ? "Uncheck all sets" : "Mark all sets complete"}
-                </button>
-              </div>
-            </details>
-          );
-        })}
-        <label className="notes-label">
-          Session notes
-          <textarea
-            maxLength="2000"
-            rows="3"
-            placeholder="How did it feel? Anything to remember next time?"
-            value={session.notes}
-            onChange={(e) =>
-              setSession((old) => ({ ...old, notes: e.target.value }))
+      {!editing && (
+        <div className="rest-timer">
+          <Clock3 size={18} />
+          <strong>
+            {String(Math.floor(timer / 60)).padStart(2, "0")}:
+            {String(timer % 60).padStart(2, "0")}
+          </strong>
+          <span>
+            {running
+              ? "Rest. Breathe. Reset."
+              : timer
+                ? "Timer paused"
+                : "Rest timer"}
+          </span>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label={running ? "Pause timer" : "Start timer"}
+            onClick={() =>
+              running ? setRunning(false) : startTimer(timer || 60)
             }
-          />
-        </label>
+          >
+            {running ? <Pause size={18} /> : <Play size={18} />}
+          </button>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Reset timer"
+            onClick={() => {
+              setRunning(false);
+              setTimer(0);
+            }}
+          >
+            <RotateCcw size={17} />
+          </button>
+        </div>
+      )}
+      <form onSubmit={finish}>
+        <fieldset disabled={busy} className="session-fields">
+          {session.exercises.map((e, i) => {
+            const exercise = EXERCISES[e.id];
+            const allDone = e.sets.every((s) => s.done);
+            return (
+              <details className="log-exercise" key={e.id} open>
+                <summary>
+                  <span className={`log-ex-number ${allDone ? "is-done" : ""}`}>
+                    {allDone ? (
+                      <Check size={16} />
+                    ) : (
+                      String(i + 1).padStart(2, "0")
+                    )}
+                  </span>
+                  <span>
+                    <strong>{exercise.name}</strong>
+                    <small>
+                      {exercise.muscle} · {exercise.rest}s rest
+                    </small>
+                  </span>
+                  <ChevronDown size={17} />
+                </summary>
+                <div className="log-exercise-body">
+                  <p>{exercise.tip}</p>
+                  <div className="set-grid set-labels">
+                    <span>SET</span>
+                    <span>KG</span>
+                    <span>REPS</span>
+                    <span>DONE</span>
+                  </div>
+                  {e.sets.map((set, j) => (
+                    <div
+                      className={`set-grid ${set.done ? "set-done" : ""}`}
+                      key={j}
+                    >
+                      <span>{j + 1}</span>
+                      <input
+                        aria-label={`${exercise.name} set ${j + 1} weight`}
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        max="1000"
+                        step="0.25"
+                        placeholder="—"
+                        value={set.weight ?? ""}
+                        onChange={(ev) =>
+                          updateSet(i, j, { weight: ev.target.value })
+                        }
+                      />
+                      <input
+                        aria-label={`${exercise.name} set ${j + 1} reps`}
+                        type="number"
+                        inputMode="numeric"
+                        min="1"
+                        max="100"
+                        required
+                        value={set.reps}
+                        onChange={(ev) =>
+                          updateSet(i, j, { reps: ev.target.value })
+                        }
+                      />
+                      <label className="set-check">
+                        <input
+                          type="checkbox"
+                          aria-label={`Complete ${exercise.name} set ${j + 1}`}
+                          checked={set.done}
+                          onChange={(ev) => {
+                            updateSet(i, j, { done: ev.target.checked });
+                            if (ev.target.checked && !editing)
+                              startTimer(exercise.rest);
+                          }}
+                        />
+                        <span>
+                          <Check size={17} />
+                        </span>
+                      </label>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="complete-exercise"
+                    onClick={() => {
+                      setSession((old) => ({
+                        ...old,
+                        exercises: old.exercises.map((item, j) =>
+                          i === j
+                            ? {
+                                ...item,
+                                sets: item.sets.map((s) => ({
+                                  ...s,
+                                  done: !allDone,
+                                })),
+                              }
+                            : item,
+                        ),
+                      }));
+                      if (!allDone && !editing) startTimer(exercise.rest);
+                    }}
+                  >
+                    <CheckCheck size={16} />
+                    {allDone ? "Uncheck all sets" : "Mark all sets complete"}
+                  </button>
+                  {editing && (
+                    <div className="history-actions edit-set-actions">
+                      <button
+                        type="button"
+                        className="button secondary"
+                        disabled={busy || e.sets.length >= 5}
+                        onClick={() =>
+                          setSession((old) => ({
+                            ...old,
+                            exercises: old.exercises.map((item, index) =>
+                              index === i
+                                ? {
+                                    ...item,
+                                    prescription: {
+                                      ...item.prescription,
+                                      sets: item.sets.length + 1,
+                                    },
+                                    sets: [
+                                      ...item.sets,
+                                      {
+                                        reps: item.prescription.reps,
+                                        weight: item.sets.at(-1).weight,
+                                        done: false,
+                                      },
+                                    ],
+                                  }
+                                : item,
+                            ),
+                          }))
+                        }
+                      >
+                        Add set
+                      </button>
+                      <button
+                        type="button"
+                        className="button secondary"
+                        disabled={busy || e.sets.length <= 1}
+                        onClick={() =>
+                          setSession((old) => ({
+                            ...old,
+                            exercises: old.exercises.map((item, index) =>
+                              index === i
+                                ? {
+                                    ...item,
+                                    prescription: {
+                                      ...item.prescription,
+                                      sets: item.sets.length - 1,
+                                    },
+                                    sets: item.sets.slice(0, -1),
+                                  }
+                                : item,
+                            ),
+                          }))
+                        }
+                      >
+                        Remove last set
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </details>
+            );
+          })}
+          <label className="notes-label">
+            Session notes
+            <textarea
+              maxLength="2000"
+              rows="3"
+              placeholder="How did it feel? Anything to remember next time?"
+              value={session.notes}
+              onChange={(e) =>
+                setSession((old) => ({ ...old, notes: e.target.value }))
+              }
+            />
+          </label>
+        </fieldset>
         {error && (
           <p role="alert" className="form-error">
             {error}
@@ -548,16 +992,18 @@ export function SessionModal({ session, setSession, save, onClose }) {
             <Save size={17} />
             {busy
               ? "Saving…"
-              : completed === total
-                ? "Finish workout"
-                : "Save partial workout"}
+              : editing
+                ? "Save changes"
+                : completed === total
+                  ? "Finish workout"
+                  : "Save partial workout"}
           </button>
         </div>
       </form>
     </Modal>
   );
 }
-export function HistoryView({ workouts, onPlan }) {
+export function HistoryView({ workouts, onPlan, onEdit, onDelete }) {
   const [filter, setFilter] = useState("all");
   const filtered = workouts.filter(
     (w) => filter === "all" || w.status === filter,
@@ -667,6 +1113,22 @@ export function HistoryView({ workouts, onPlan }) {
                     <p>{w.notes}</p>
                   </div>
                 )}
+                <div className="history-actions">
+                  <button
+                    className="button secondary"
+                    onClick={() => onEdit(w)}
+                  >
+                    <Pencil size={16} />
+                    Edit workout
+                  </button>
+                  <button
+                    className="button secondary danger-text"
+                    onClick={() => onDelete(w)}
+                  >
+                    <Trash2 size={16} />
+                    Delete workout
+                  </button>
+                </div>
               </div>
             </details>
           ))}
@@ -684,7 +1146,9 @@ export function ProgressView({ state, week, onPlan, onSettings }) {
   );
   const unique = [
     ...new Set(
-      PLANS[state.settings.days].flatMap((d) => d.exercises.map((e) => e.id)),
+      trainingPlan(state.settings, state.routines).flatMap((d) =>
+        d.exercises.map((e) => e.id),
+      ),
     ),
   ];
   const suggestions = unique

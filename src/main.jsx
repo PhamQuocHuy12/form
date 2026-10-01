@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { createRoot } from "react-dom/client";
 import {
   Activity,
-  ArrowUpRight,
   CalendarDays,
   Check,
   ChevronLeft,
@@ -12,48 +12,40 @@ import {
   Flame,
   History,
   LayoutGrid,
+  LogOut,
   Leaf,
   Plus,
   Settings2,
   Target,
   TrendingUp,
-  Trophy,
-  X,
 } from "lucide-react";
 import {
   PLANS,
   MUSCLES,
-  DEFAULT_SETTINGS,
   dateKey,
   monday,
   shiftDate,
   prescriptions,
+  trainingPlan,
 } from "../shared/training.mjs";
 import "./styles.css";
 import {
   SettingsModal,
   TargetModal,
   SessionModal,
+  ExercisePlanModal,
+  DeleteWorkoutModal,
   createSession,
   HistoryView,
   ProgressView,
 } from "./components.jsx";
+import { auth, db, firebaseConfigurationError } from "./firebase-config.js";
+import { AuthScreen, authError } from "./auth.jsx";
+import { createCloudStore, emptyTrainingState } from "./training-store.js";
 
-const empty = { settings: DEFAULT_SETTINGS, targets: {}, workouts: [] };
 const weekdayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const formatDate = (key, options) =>
   new Date(`${key}T12:00:00`).toLocaleDateString("en-US", options);
-async function api(route, method = "GET", value) {
-  const response = await fetch(`/api/${route}`, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    ...(value ? { body: JSON.stringify(value) } : {}),
-  });
-  const data = await response.json();
-  if (!response.ok)
-    throw new Error(data.error || "Something went wrong. Please try again.");
-  return data;
-}
 function Brand() {
   return (
     <div className="brand">
@@ -64,8 +56,8 @@ function Brand() {
     </div>
   );
 }
-function App() {
-  const [state, setState] = useState(empty);
+function App({ store, user }) {
+  const [state, setState] = useState(emptyTrainingState);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
   const [week, setWeek] = useState(monday());
@@ -73,9 +65,13 @@ function App() {
   const [view, setView] = useState("planner");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [target, setTarget] = useState(null);
+  const [routineDay, setRoutineDay] = useState(null);
+  const [editingWorkout, setEditingWorkout] = useState(null);
+  const [deletingWorkout, setDeletingWorkout] = useState(null);
+  const draftKey = `form-session:${user.uid}`;
   const [session, setSession] = useState(() => {
     try {
-      const draft = JSON.parse(sessionStorage.getItem("form-session"));
+      const draft = JSON.parse(sessionStorage.getItem(draftKey));
       return draft?.id &&
         Array.isArray(draft.exercises) &&
         PLANS[draft.days]?.some((d) => d.id === draft.dayId)
@@ -87,29 +83,40 @@ function App() {
   });
   const [sessionOpen, setSessionOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const [signingOut, setSigningOut] = useState(false);
+  const [retry, setRetry] = useState(0);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const closeTarget = useCallback(() => setTarget(null), []);
   const closeSession = useCallback(() => setSessionOpen(false), []);
+  const closeRoutine = useCallback(() => setRoutineDay(null), []);
+  const closeEditWorkout = useCallback(() => setEditingWorkout(null), []);
+  const closeDeleteWorkout = useCallback(() => setDeletingWorkout(null), []);
   useEffect(() => {
-    api("state")
-      .then((data) => {
+    setLoaded(false);
+    setError("");
+    return store.subscribe(
+      (data) => {
         setState(data);
         setLoaded(true);
+        setError("");
         setSession((s) =>
           data.workouts.some((w) => w.id === s?.id) ? null : s,
         );
-      })
-      .catch((e) => setError(e.message));
-  }, []);
+      },
+      (e) => {
+        setError(e.message);
+        setLoaded(false);
+      },
+    );
+  }, [store, retry]);
   useEffect(() => {
     try {
-      if (session)
-        sessionStorage.setItem("form-session", JSON.stringify(session));
-      else sessionStorage.removeItem("form-session");
+      if (session) sessionStorage.setItem(draftKey, JSON.stringify(session));
+      else sessionStorage.removeItem(draftKey);
     } catch {
       /* Completed workouts still use the database. */
     }
-  }, [session]);
+  }, [session, draftKey]);
   useEffect(() => {
     if (toast) {
       const timeout = setTimeout(() => setToast(""), 5000);
@@ -117,18 +124,18 @@ function App() {
     }
   }, [toast]);
   async function saveSettings(settings) {
-    const saved = await api("settings", "PUT", settings);
+    const saved = await store.saveSettings(settings);
     setState((s) => ({ ...s, settings: saved }));
     setSelected(0);
     setToast("Your training plan is ready.");
   }
   async function saveTarget(value) {
-    const saved = await api("targets", "PUT", value);
+    const saved = await store.saveTarget(value);
     setState((s) => ({ ...s, targets: { ...s.targets, [saved.id]: saved } }));
     setToast("Exercise target saved.");
   }
   async function saveWorkout(value) {
-    const saved = await api("workouts", "POST", value);
+    const saved = await store.saveWorkout(value);
     setState((s) => ({
       ...s,
       workouts: [saved, ...s.workouts.filter((w) => w.id !== saved.id)],
@@ -145,7 +152,43 @@ function App() {
     if (!session) setSession(createSession(workout, week, state));
     setSessionOpen(true);
   }
-  const plan = PLANS[state.settings.days];
+  async function saveRoutine(value) {
+    const saved = await store.saveRoutine(value);
+    setState((current) => ({
+      ...current,
+      routines: { ...current.routines, [saved.id]: saved },
+    }));
+    setToast("Exercise list saved. New sessions will use your changes.");
+  }
+  async function updateWorkout(value) {
+    const saved = await store.updateWorkout(value);
+    setState((current) => ({
+      ...current,
+      workouts: current.workouts.map((workout) =>
+        workout.id === saved.id ? saved : workout,
+      ),
+    }));
+    setEditingWorkout(null);
+    setToast("Workout updated. Your progress and records are recalculated.");
+  }
+  async function deleteWorkout(value) {
+    await store.deleteWorkout(value);
+    setState((current) => ({
+      ...current,
+      workouts: current.workouts.filter((workout) => workout.id !== value.id),
+    }));
+    setToast("Workout deleted. Your progress and records are recalculated.");
+  }
+  async function logout() {
+    setSigningOut(true);
+    try {
+      await signOut(auth);
+    } catch (e) {
+      setToast(authError(e));
+      setSigningOut(false);
+    }
+  }
+  const plan = trainingPlan(state.settings, state.routines);
   const workout = plan[selected] || plan[0];
   const completedDays = new Set(
     state.workouts
@@ -240,7 +283,7 @@ function App() {
           </div>
           <div className="local-label">
             <span />
-            Saved on this computer
+            {user ? "Saved to your account" : "Saved on this computer"}
           </div>
         </div>
       </aside>
@@ -267,7 +310,20 @@ function App() {
                 year: "numeric",
               })}
             </span>
-            <span className="avatar">YOU</span>
+            <span className="avatar" title={user.email}>
+              {user.email?.slice(0, 2).toUpperCase() || "YOU"}
+            </span>
+            {user && (
+              <button
+                className="icon-button signout-button"
+                aria-label="Sign out"
+                title={`Sign out of ${user.email}`}
+                disabled={signingOut}
+                onClick={logout}
+              >
+                <LogOut size={18} />
+              </button>
+            )}
           </span>
         </header>
         <main>
@@ -303,11 +359,15 @@ function App() {
           {error && (
             <div role="alert" className="error-banner">
               {error}
-              <button onClick={() => window.location.reload()}>Retry</button>
+              <button onClick={() => setRetry((value) => value + 1)}>
+                Retry
+              </button>
             </div>
           )}
           {!loaded ? (
-            <div className="loading">Loading your training plan…</div>
+            error ? null : (
+              <div className="loading">Loading your training plan…</div>
+            )
           ) : (
             <>
               {view !== "history" && (
@@ -356,6 +416,10 @@ function App() {
                 <HistoryView
                   workouts={state.workouts}
                   onPlan={() => setView("planner")}
+                  onEdit={(workout) =>
+                    setEditingWorkout(structuredClone(workout))
+                  }
+                  onDelete={setDeletingWorkout}
                 />
               )}
               {view === "progress" && (
@@ -475,6 +539,15 @@ function App() {
                         </div>
                       </details>
                       <div className="exercise-list">
+                        <div className="exercise-list-toolbar">
+                          <span>{workout.exercises.length} exercises</span>
+                          <button
+                            className="button secondary"
+                            onClick={() => setRoutineDay(workout)}
+                          >
+                            Edit exercises <Settings2 size={16} />
+                          </button>
+                        </div>
                         {workout.exercises.map((ex, index) => {
                           const p = prescriptions(ex, week, state);
                           return (
@@ -679,6 +752,30 @@ function App() {
           onClose={closeTarget}
         />
       )}
+      {routineDay && (
+        <ExercisePlanModal
+          day={routineDay}
+          save={saveRoutine}
+          onClose={closeRoutine}
+        />
+      )}
+      {editingWorkout && (
+        <SessionModal
+          key={editingWorkout.id}
+          session={editingWorkout}
+          setSession={setEditingWorkout}
+          save={updateWorkout}
+          onClose={closeEditWorkout}
+          editing
+        />
+      )}
+      {deletingWorkout && (
+        <DeleteWorkoutModal
+          workout={deletingWorkout}
+          remove={deleteWorkout}
+          onClose={closeDeleteWorkout}
+        />
+      )}
       {sessionOpen && session && (
         <SessionModal
           session={session}
@@ -696,4 +793,41 @@ function App() {
     </div>
   );
 }
-createRoot(document.getElementById("root")).render(<App />);
+function Root() {
+  const [account, setAccount] = useState({
+    ready: !auth,
+    user: null,
+    error: "",
+  });
+  useEffect(() => {
+    if (!auth) return;
+    return onAuthStateChanged(
+      auth,
+      (user) => setAccount({ ready: true, user, error: "" }),
+      (error) =>
+        setAccount({ ready: true, user: null, error: authError(error) }),
+    );
+  }, []);
+  const store = useMemo(
+    () => (account.user ? createCloudStore(db, account.user.uid) : null),
+    [account.user?.uid],
+  );
+  if (firebaseConfigurationError || account.error)
+    return (
+      <div className="setup-error">
+        <h1>Finish Firebase setup</h1>
+        <p role="alert">{firebaseConfigurationError || account.error}</p>
+        <button
+          className="button secondary"
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  if (!account.ready)
+    return <div className="loading">Restoring your sign-in…</div>;
+  if (!account.user) return <AuthScreen auth={auth} />;
+  return <App key={account.user.uid} store={store} user={account.user} />;
+}
+createRoot(document.getElementById("root")).render(<Root />);

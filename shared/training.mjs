@@ -1,4 +1,5 @@
 export const MUSCLES = ["Chest", "Back", "Shoulders", "Arms", "Legs", "Core"];
+export const MAX_EXERCISES = 8;
 const ex = (id, name, muscle, equipment, sets, min, max, rest, tip) => ({
   id,
   name,
@@ -326,6 +327,78 @@ export const PLANS = {
   ],
 };
 export const DEFAULT_SETTINGS = { days: 4, strategy: "weight" };
+export const WEEKDAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+export function trainingPlan(settings, routines = {}) {
+  const weekdays =
+    settings.weekdays ?? PLANS[settings.days].map((day) => day.weekday);
+  return PLANS[settings.days].map((day, index) => ({
+    ...day,
+    weekday: weekdays[index],
+    ...(routines[day.id]
+      ? {
+          exercises: routines[day.id].exerciseIds.map((id) => EXERCISES[id]),
+          subtitle: [
+            ...new Set(
+              routines[day.id].exerciseIds.map((id) => EXERCISES[id].muscle),
+            ),
+          ].join(", "),
+        }
+      : {}),
+  }));
+}
+export function validateRoutine(value) {
+  if (
+    !value ||
+    !Object.values(PLANS)
+      .flat()
+      .some((day) => day.id === value.id) ||
+    !Array.isArray(value.exerciseIds) ||
+    value.exerciseIds.length < 1 ||
+    value.exerciseIds.length > MAX_EXERCISES ||
+    new Set(value.exerciseIds).size !== value.exerciseIds.length ||
+    !value.exerciseIds.every((id) => Object.hasOwn(EXERCISES, id))
+  )
+    throw new Error(
+      `Choose 1–${MAX_EXERCISES} different exercises from the exercise library.`,
+    );
+  return { id: value.id, exerciseIds: [...value.exerciseIds] };
+}
+export function assertWorkoutVersion(value, existing) {
+  const revision = value.revision ?? 0;
+  if (
+    !Number.isSafeInteger(revision) ||
+    revision < 0 ||
+    revision !== (existing.revision ?? 0)
+  )
+    throw new Error(
+      "This workout changed in another tab. Close this dialog and open it again before saving or deleting.",
+    );
+}
+export function validateWorkoutUpdate(value, existing) {
+  if (!existing)
+    throw new Error(
+      "This workout no longer exists. Close this dialog and refresh your history.",
+    );
+  assertWorkoutVersion(value, existing);
+  for (const key of ["id", "week", "days", "dayId", "title", "finishedAt"])
+    if (value[key] !== existing[key])
+      throw new Error(
+        "A workout’s original date and session details cannot be changed.",
+      );
+  return {
+    ...validateWorkout(value),
+    finishedAt: existing.finishedAt,
+    revision: (existing.revision ?? 0) + 1,
+  };
+}
 export function dateKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
@@ -473,12 +546,30 @@ export function validateSettings(value) {
     !["weight", "reps", "sets"].includes(value.strategy)
   )
     throw new Error("Choose 3–5 days and a valid progression method.");
-  return { days: value.days, strategy: value.strategy };
+  if (
+    value.weekdays !== undefined &&
+    (!Array.isArray(value.weekdays) ||
+      value.weekdays.length !== value.days ||
+      new Set(value.weekdays).size !== value.days ||
+      !value.weekdays.every(
+        (day) => Number.isInteger(day) && day >= 0 && day <= 6,
+      ))
+  )
+    throw new Error(
+      `Choose exactly ${value.days} different weekdays for your plan.`,
+    );
+  return {
+    days: value.days,
+    strategy: value.strategy,
+    ...(value.weekdays !== undefined
+      ? { weekdays: [...value.weekdays].sort((a, b) => a - b) }
+      : {}),
+  };
 }
 export function validateTarget(value) {
   if (
     !value ||
-    !EXERCISES[value.id] ||
+    !Object.hasOwn(EXERCISES, value.id) ||
     !Number.isInteger(value.sets) ||
     value.sets < 1 ||
     value.sets > 5 ||
@@ -519,7 +610,10 @@ export function validateWorkout(value) {
   if (
     !planDay ||
     !Array.isArray(value.exercises) ||
-    value.exercises.length !== planDay.exercises.length ||
+    value.exercises.length < 1 ||
+    value.exercises.length > MAX_EXERCISES ||
+    new Set(value.exercises.map((exercise) => exercise?.id)).size !==
+      value.exercises.length ||
     !["completed", "partial"].includes(value.status) ||
     typeof value.notes !== "string" ||
     value.notes.length > 2000
@@ -527,9 +621,10 @@ export function validateWorkout(value) {
     throw new Error("Invalid workout details.");
   let doneCount = 0;
   let setCount = 0;
-  const exercises = value.exercises.map((e, index) => {
+  const exercises = value.exercises.map((e) => {
     if (
-      e.id !== planDay.exercises[index].id ||
+      !e ||
+      !Object.hasOwn(EXERCISES, e.id) ||
       !Array.isArray(e.sets) ||
       e.sets.length < 1 ||
       e.sets.length > 5

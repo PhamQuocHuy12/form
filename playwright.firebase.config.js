@@ -1,17 +1,17 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
-  testDir: "./tests/setup-browser",
+  testDir: "./tests/cloud-browser",
   workers: 1,
   retries: 0,
   use: {
-    baseURL: "http://localhost:5174",
+    baseURL: "http://localhost:5176",
     channel: "msedge",
     trace: "retain-on-failure",
   },
   webServer: {
     command:
-      "node node_modules/vite/bin/vite.js preview --mode test-setup --outDir dist-test-setup --host 127.0.0.1 --port 5174 --strictPort",
-    url: "http://localhost:5174",
+      "node node_modules/vite/bin/vite.js preview --mode test-cloud --outDir dist-test-cloud --host 127.0.0.1 --port 5176 --strictPort",
+    url: "http://localhost:5176",
     reuseExistingServer: false,
   },
 });

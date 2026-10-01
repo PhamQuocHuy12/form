@@ -1,8 +1,14 @@
 node_modules/
 dist/
+dist-test-setup/
+dist-test-cloud/
 data/
 .env
+.env.*
+!.env.example
 *.log
 .DS_Store
 test-results/
 playwright-report/
+*-debug.log
+.firebase/
