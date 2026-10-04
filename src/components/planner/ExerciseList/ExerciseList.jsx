@@ -10,6 +10,7 @@ import {
   weightButton,
 } from "./ExerciseList.styles.js";
 import { Button } from "../../common/Button/Button.jsx";
+import { ExerciseYoutubeLink } from "../../common/ExerciseYoutubeLink/ExerciseYoutubeLink.jsx";
 import React from "react";
 import { Dumbbell, Plus, Settings2, TrendingUp } from "lucide-react";
 import { prescriptions } from "../../../../shared/functions/progression.mjs";
@@ -46,6 +47,7 @@ export function ExerciseList({
                 <b>·</b>
                 {ex.equipment}
               </span>
+              <ExerciseYoutubeLink exercise={ex} />
             </div>
             <div
               className={`${exerciseTarget} exercise-target ${p.increased ? "target-increased" : ""}`}

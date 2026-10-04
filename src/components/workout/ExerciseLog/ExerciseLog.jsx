@@ -3,10 +3,12 @@ import {
   logExercise,
   logExNumber,
   logExerciseBody,
+  logExerciseTip,
   completeExercise,
 } from "./ExerciseLog.styles.js";
 import { setGrid } from "../SetLogRow/SetLogRow.styles.js";
 import { Button } from "../../common/Button/Button.jsx";
+import { ExerciseYoutubeLink } from "../../common/ExerciseYoutubeLink/ExerciseYoutubeLink.jsx";
 import React from "react";
 import { Check, CheckCheck, ChevronDown } from "lucide-react";
 import { EXERCISES } from "../../../../shared/catalog/exercises.mjs";
@@ -52,7 +54,10 @@ export function ExerciseLog({
         <ChevronDown size={17} />
       </summary>
       <div className={`${logExerciseBody} log-exercise-body`}>
-        <p>{exercise.tip}</p>
+        <div className={`${logExerciseTip} log-exercise-tip`}>
+          <p>{exercise.tip}</p>
+          <ExerciseYoutubeLink exercise={exercise} />
+        </div>
         {!editing && (
           <LastPerformance exercise={exercise} previous={previous} />
         )}

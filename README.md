@@ -90,6 +90,7 @@ After upgrading to exercise customization and history editing, publish the **ful
 - Choose your own Monday–Sunday training weekdays under **Customize plan**. Pick exactly 3, 4, or 5 days; workouts follow their existing order across the selected days, repeating each week. Other days are recovery days. Older settings retain their default schedule. Switching split length starts with that split’s default weekdays.
 - Chest, back, shoulders, arms, legs, and core coverage, with training and recovery days.
 - Exercise-specific sets, reps, rest intervals, equipment, form cues, and optional target weights.
+- YouTube search buttons for every exercise in the planner, workout log, and exercise editor. Each opens a new tab searching the exercise's full name.
 - Expandable warm-up and cool-down recommendations for each session.
 - Per-set actual weights and reps, completed-set checkboxes, a rest timer, and session notes.
 - **Last time** in the workout logger shows each exercise’s most recently saved completed sets, including weights, reps, and the log date. Partial workouts contribute only checked-off sets; bodyweight displays as BW. Comparisons work across splits and custom exercise lists, include earlier logs in the same week, and exclude logs assigned to later training weeks. Exercises without logged sets show an empty-history hint. Corrections and deletions update comparisons automatically.

@@ -50,16 +50,24 @@ export const logExNumber = css`
 
 export const logExerciseBody = css`
   padding: 16px;
-  & > p {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #9dab8e;
-    margin-bottom: 17px;
-  }
   @media (max-width: 760px) {
     & {
       padding: 13px;
     }
+  }
+`;
+
+export const logExerciseTip = css`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 17px;
+  & p {
+    flex: 1 1 200px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #9dab8e;
   }
 `;
 

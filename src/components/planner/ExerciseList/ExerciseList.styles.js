@@ -109,6 +109,9 @@ export const exerciseSymbol = css`
 export const exerciseInfo = css`
   flex: 1;
   min-width: 0;
+  & .exercise-youtube-link {
+    margin-top: 8px;
+  }
   & h3 {
     font-weight: 600;
     line-height: 1.5;

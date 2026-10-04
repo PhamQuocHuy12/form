@@ -123,12 +123,16 @@ export const routineChoice = css`
 export const routineActions = css`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   margin-top: 6px;
   & small {
     flex: 1;
     color: var(--muted);
     font-size: 12px;
+    @media (max-width: 480px) {
+      flex-basis: 100%;
+    }
   }
   & button {
     min-height: 44px;

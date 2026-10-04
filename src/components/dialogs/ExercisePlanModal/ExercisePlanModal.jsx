@@ -1,4 +1,5 @@
 import { IconButton } from "../../common/IconButton/IconButton.jsx";
+import { ExerciseYoutubeLink } from "../../common/ExerciseYoutubeLink/ExerciseYoutubeLink.jsx";
 import { fieldset, field } from "../../common/styles/FormControls.styles.js";
 import {
   routineEditor,
@@ -149,6 +150,7 @@ export function ExercisePlanModal({ day, save, onClose }) {
                   <small>
                     {EXERCISES[id].muscle} · {EXERCISES[id].equipment}
                   </small>
+                  <ExerciseYoutubeLink exercise={EXERCISES[id]} />
                   <IconButton
                     type="button"
                     aria-label={`Move ${EXERCISES[id].name} up`}

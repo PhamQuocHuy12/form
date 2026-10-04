@@ -15,7 +15,7 @@ export function Modal({ title, onClose, children, wide = false }) {
       if (e.key !== "Tab") return;
       const items = [
         ...panel.current.querySelectorAll(
-          'button:not(:disabled),input:not(:disabled),textarea,select,[tabindex="0"]',
+          'a[href],button:not(:disabled),input:not(:disabled),textarea,select,[tabindex="0"]',
         ),
       ].filter((el) => el.getClientRects().length);
       if (!items.length) return;
