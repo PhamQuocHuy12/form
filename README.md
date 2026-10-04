@@ -138,13 +138,13 @@ The Firebase emulator tests require **Java 21 or newer** on your PATH. They use 
 ## Project map
 
 - `src/main.jsx`, `src/App.jsx`, `src/WorkoutApp.jsx` — mounting, authentication entry, and application composition.
-- `src/pages/` — authentication, setup, planner, history, and progress screens.
-- `src/components/` — feature components, layout, workout logging, charts, and dialogs.
+- `src/pages/` — authentication, setup, planner, history, and progress screens, each with its own folder and nearby Linaria styles.
+- `src/components/` — feature groups containing a folder per component and its styles; shared style-only modules live in `common/styles/`.
 - `src/hooks/` — planner state, authentication, draft recovery, drag gestures, and timer lifecycle.
 - `src/functions/` — pure session edits, normalization, state validation, and progress calculations.
 - `src/utils/` — reusable formatting helpers.
 - `src/services/` — Firebase, authentication, cloud storage, browser drafts, and optional browser integration.
-- `src/styles.css`, `src/styles/` — ordered stylesheet entry point and responsive dark theme by area.
+- `src/styles.css`, `src/styles/` — plain CSS for fonts, theme variables, resets, and global accessibility; component appearance and responsive rules live in nearby Linaria files.
 - `firestore.rules` — account isolation and document validation.
 - `firebase.json` — rule deployment and local emulator configuration.
 - `.github/workflows/deploy-pages.yml` — build, Firebase configuration checks, and GitHub Pages deployment.

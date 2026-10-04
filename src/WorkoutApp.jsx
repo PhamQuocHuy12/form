@@ -1,15 +1,20 @@
+import {
+  errorBanner,
+  loading,
+  toast,
+} from "./components/common/styles/Feedback.styles.js";
 import React from "react";
 import { Check } from "lucide-react";
-import { HistoryPage } from "./pages/HistoryPage.jsx";
-import { ProgressPage } from "./pages/ProgressPage.jsx";
-import { AppLayout } from "./components/layout/AppLayout.jsx";
-import { PageHeading } from "./components/layout/PageHeading.jsx";
-import { WeekToolbar } from "./components/planner/WeekToolbar.jsx";
-import { DraftRecovery } from "./components/workout/DraftRecovery.jsx";
-import { PlannerPage } from "./pages/PlannerPage.jsx";
+import { HistoryPage } from "./pages/HistoryPage/HistoryPage.jsx";
+import { ProgressPage } from "./pages/ProgressPage/ProgressPage.jsx";
+import { AppLayout } from "./components/layout/AppLayout/AppLayout.jsx";
+import { PageHeading } from "./components/layout/PageHeading/PageHeading.jsx";
+import { WeekToolbar } from "./components/planner/WeekToolbar/WeekToolbar.jsx";
+import { DraftRecovery } from "./components/workout/DraftRecovery/DraftRecovery.jsx";
+import { PlannerPage } from "./pages/PlannerPage/PlannerPage.jsx";
 import { useWorkoutPlanner } from "./hooks/useWorkoutPlanner.js";
 import { useTrainingPlanTool } from "./hooks/useTrainingPlanTool.js";
-import { WorkoutDialogs } from "./components/dialogs/WorkoutDialogs.jsx";
+import { WorkoutDialogs } from "./components/dialogs/WorkoutDialogs/WorkoutDialogs.jsx";
 
 export function WorkoutApp({ store, user }) {
   const planner = useWorkoutPlanner(store, user);
@@ -47,13 +52,13 @@ export function WorkoutApp({ store, user }) {
           onSettings={() => setSettingsOpen(true)}
         />
         {error && (
-          <div role="alert" className="error-banner">
+          <div role="alert" className={`${errorBanner} error-banner`}>
             {error}
             <button onClick={retryLoading}>Retry</button>
           </div>
         )}
         {draftWarning && (
-          <div role="alert" className="error-banner">
+          <div role="alert" className={`${errorBanner} error-banner`}>
             {draftWarning}
           </div>
         )}
@@ -67,7 +72,9 @@ export function WorkoutApp({ store, user }) {
         )}
         {!loaded ? (
           error ? null : (
-            <div className="loading">Loading your training plan…</div>
+            <div className={`${loading} loading`}>
+              Loading your training plan…
+            </div>
           )
         ) : (
           <>
@@ -117,7 +124,7 @@ export function WorkoutApp({ store, user }) {
       </AppLayout>
       <WorkoutDialogs planner={planner} />
       {toast && (
-        <div className="toast" role="status">
+        <div className={`${toast} toast`} role="status">
           <Check size={18} />
           {toast}
         </div>

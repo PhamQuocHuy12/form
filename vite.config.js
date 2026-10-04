@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import linaria from "@wyw-in-js/vite";
 
 export default defineConfig(({ mode }) => {
   const testMode = mode === "test-cloud" || mode === "test-setup";
@@ -29,6 +30,11 @@ export default defineConfig(({ mode }) => {
     messagingSenderId: "MESSAGING_SENDER_ID",
   };
   return {
+    plugins: [
+      linaria({
+        include: ["**/src/**/*.styles.js"],
+      }),
+    ],
     // Tests never load the user’s .env files or connect to their Firebase project.
     ...(testMode
       ? {

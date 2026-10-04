@@ -1,11 +1,3 @@
-/* Import order preserves the existing cascade; see docs/architecture.md. */
+/* Fonts, theme tokens, resets, and global accessibility only. */
 @import "./styles/theme.css";
-@import "./styles/account-editor.css";
 @import "./styles/base.css";
-@import "./styles/planner-layout.css";
-@import "./styles/layout-responsive.css";
-@import "./styles/workout-forms.css";
-@import "./styles/history.css";
-@import "./styles/progress.css";
-@import "./styles/view-controls.css";
-@import "./styles/responsive.css";
