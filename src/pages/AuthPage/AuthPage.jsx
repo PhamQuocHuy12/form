@@ -20,6 +20,7 @@ import { field } from "../../components/common/styles/FormControls.styles.js";
 import { formError } from "../../components/common/styles/FormFeedback.styles.js";
 import { Button } from "../../components/common/Button/Button.jsx";
 import React, { useState } from "react";
+import { InstallApp } from "../../components/layout/InstallApp/InstallApp.jsx";
 import { Check, Dumbbell, LockKeyhole, Mail } from "lucide-react";
 
 import {
@@ -74,6 +75,7 @@ export function AuthPage({ auth }) {
           <Dumbbell size={23} />
         </span>
         <strong>FORM</strong>
+        <InstallApp />
       </header>
       <main className={`${authLayout} ${mainContent} auth-layout`}>
         <section className={`${authIntro} auth-intro`}>

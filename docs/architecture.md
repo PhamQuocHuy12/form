@@ -64,6 +64,12 @@ Progress pages calculate an overview with `src/functions/progress.js`. Shared me
 
 `useAppearance` subscribes independently to `users/{uid}/preferences/appearance` through the cloud store. Appearance failures do not block training data. The validated theme choice is account scoped; a best-effort browser cache gives a startup hint, and acknowledged Firestore snapshots replace it. The hook applies `data-theme` to the document root, observes device color-scheme changes for System mode, and cleans up on sign-out. Components use semantic CSS variables from `src/styles/theme.css` for surfaces, text, status colors, and charts. Theme and plan writes use separate documents so they cannot overwrite each other.
 
+## Browser installation
+
+`pwa/vite-pwa.js` runs after the production bundle is written and generates `sw.js` with a content-derived cache version and an explicit list of public build files. `pwa/service-worker.js` caches the app shell and ignores other requests, including Firebase. Its URLs and cache names are scoped to the deployment path. Updates use the normal service-worker waiting lifecycle; closing all app windows activates the new version without reloading an active workout. Cache cleanup only removes older FORM app-file caches in the same scope.
+
+`src/services/pwa.js` captures browser installation events before React mounts, registers the worker in production builds, and publishes installation, connection, and update state through `usePwa`. `InstallApp` provides a native prompt where supported and Safari home-screen instructions on iOS. `PwaStatus` reports offline limitations and pending updates independently of authentication. Cloud persistence keeps its existing online acknowledgement rules.
+
 ## Dependency rules
 
 - Pages compose components and call pure calculations; persistence goes through callbacks from their controller.

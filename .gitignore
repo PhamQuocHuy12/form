@@ -2,6 +2,7 @@ node_modules/
 dist/
 dist-test-setup/
 dist-test-cloud/
+dist-test-pwa/
 data/
 .env
 .env.*

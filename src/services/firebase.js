@@ -32,7 +32,10 @@ if (firebaseApp && import.meta.env.VITE_FIREBASE_USE_EMULATORS === "true") {
   const local = ["localhost", "127.0.0.1"].includes(window.location.hostname);
   if (
     !local ||
-    !(import.meta.env.DEV || import.meta.env.MODE === "test-cloud")
+    !(
+      import.meta.env.DEV ||
+      ["test-cloud", "test-pwa"].includes(import.meta.env.MODE)
+    )
   ) {
     throw new Error(
       "Firebase emulators are only supported in local development and tests.",

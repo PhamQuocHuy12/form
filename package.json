@@ -19,7 +19,9 @@
     "test:firebase": "firebase emulators:exec --project demo-form --only auth,firestore \"npm run test:cloud\"",
     "test:cloud": "node --test tests/firebase/*.test.mjs && npm run build:test:cloud && playwright test --config playwright.firebase.config.js && npm run test:setup",
     "test:setup": "npm run build:test:setup && playwright test",
-    "format": "prettier --write src shared tests vite.config.js playwright*.js package.json firebase.json README.md .github/workflows/*.yml"
+    "build:test:pwa": "vite build --mode test-pwa --outDir dist-test-pwa",
+    "test:pwa": "npm run build:test:pwa && playwright test --config playwright.pwa.config.js",
+    "format": "prettier --write src shared tests pwa public/manifest.webmanifest index.html vite.config.js playwright*.js package.json firebase.json README.md .github/workflows/*.yml"
   },
   "dependencies": {
     "@linaria/core": "^8.2.0",

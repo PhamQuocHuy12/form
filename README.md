@@ -20,6 +20,22 @@ npm start
 
 Stop the development server before starting the production server on the same port. Use `npm run dev -- --port 5178` or `npm run preview -- --port 5178` to choose a different port.
 
+## Install FORM
+
+FORM is an installable progressive web app. After deploying the latest build, open its HTTPS website:
+
+- **Android (Chrome):** tap **Install FORM** in the app header when offered, or use **Install app / Add to Home screen** in the browser menu.
+- **iPhone / iPad (Safari):** tap the download icon in the FORM header for instructions, then use Safari’s **Share → Add to Home Screen → Add**.
+- **Desktop (Chrome / Edge):** use the header’s **Install FORM** button when available, or the browser’s install icon/menu.
+
+FORM launches in its own window with a home-screen or desktop icon. The browser decides when to offer installation; already-installed apps hide the install control. Installation requires HTTPS, or localhost for development testing. `npm run build` followed by `npm start` supports local installation testing; the development server does not register a service worker.
+
+After the first successful online load, the service worker caches the public app files so the app shell can reopen offline. **Signing in, loading cloud plans/history, and saving completed workouts still require an internet connection.** Existing local workout drafts remain on the same browser/device when browser storage is available. Installing does not add offline cloud synchronization or transfer drafts between browsers. An offline banner explains these limits.
+
+Updates download in the background and wait until all FORM tabs and app windows close. An update notice tells you when to close and reopen; the app never forces a reload during a workout. Old app-file caches are then removed, while account storage and drafts are retained. Firebase requests and user data are excluded from the service-worker cache. The manifest, worker scope, and assets work at both the site root and GitHub Pages’ `/form/` path.
+
+The manifest is in `public/manifest.webmanifest`; PNG icons reuse the existing FORM vector mark and can be regenerated with `node pwa/generate-icons.mjs` (installed Edge required). `pwa/vite-pwa.js` generates a versioned `sw.js` from the final build without additional runtime dependencies.
+
 ## Publish to GitHub Pages
 
 The included `.github/workflows/deploy-pages.yml` builds and deploys on pushes to `main`, or manually from **Actions → Deploy FORM to GitHub Pages → Run workflow**. It runs the training tests and publishes only `dist`, using Node.js 24. GitHub's Pages metadata sets the asset base path automatically for repository URLs and custom domains. No manual change to the local Vite base is needed.
@@ -134,9 +150,12 @@ npm test
 npm run build
 npm run test:firebase
 npm run test:setup
+npm run test:pwa
 ```
 
 Browser tests use installed Microsoft Edge and static Vite previews. Firebase tests use port 5176 with Authentication on 9099 and Firestore on 8080; setup-screen tests use port 5174 with Firebase configuration intentionally absent. Each planner browser test has its own emulator account. Screenshots are saved to `test-results/`. Change `channel` in the Playwright configs to use another supported browser.
+
+`npm run test:pwa` uses port 5179 with a synthetic Firebase configuration and the `/form/` base path, without connecting to production Firebase or requiring emulators. It checks browser installability, manifest/icon paths, prompt acceptance/dismissal, iPhone instructions, offline reopening, public-file-only caching, and update waiting across multiple windows.
 
 The Firebase emulator tests require **Java 21 or newer** on your PATH. They use the `demo-form` project, exercise real Auth and Firestore SDK calls, and verify owner-only rules, invalid writes, preserved workout dates, stale-edit protection, editing/deletion, custom exercise lists, idempotent saves, sign-in/out, account isolation, cross-tab updates, and draft retention after failed saves. Test builds disable `.env` loading and inject synthetic configuration; they never connect to the configured production project. `VITE_FIREBASE_USE_EMULATORS=true` can be used for manual local development against the emulators. It is rejected in normal production builds and on non-local hosts.
 

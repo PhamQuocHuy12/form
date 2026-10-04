@@ -9,6 +9,14 @@ export const topbarRight = css`
       gap: 12px;
     }
   }
+  @media (max-width: 400px) {
+    &:has(.install-app-button) {
+      gap: 8px;
+    }
+    &:has(.install-app-button) .avatar {
+      display: none;
+    }
+  }
 `;
 
 export const todayLabel = css`

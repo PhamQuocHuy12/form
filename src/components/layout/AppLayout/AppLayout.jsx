@@ -29,6 +29,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Brand } from "../Brand/Brand.jsx";
+import { InstallApp } from "../InstallApp/InstallApp.jsx";
 
 export function AppLayout({
   view,
@@ -100,6 +101,7 @@ export function AppLayout({
             <Brand />
           </div>
           <span className={`${topbarRight} topbar-right`}>
+            <InstallApp />
             <span className={`${todayLabel} today-label`}>
               {new Date().toLocaleDateString("en-US", {
                 month: "short",
