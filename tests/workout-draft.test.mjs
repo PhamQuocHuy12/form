@@ -4,7 +4,7 @@ import {
   createDraftStorage,
   validateDraft,
   DRAFT_STORAGE_WARNING,
-} from "../src/workout-draft.js";
+} from "../src/services/workout-draft.js";
 
 function memoryStorage() {
   const items = new Map();

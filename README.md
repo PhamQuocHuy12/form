@@ -137,16 +137,21 @@ The Firebase emulator tests require **Java 21 or newer** on your PATH. They use 
 
 ## Project map
 
-- `src/main.jsx` — planner, navigation, state, and persistence actions.
-- `src/components.jsx` — workout logging, target/settings dialogs, history, and progress.
-- `src/styles.css` — responsive dark theme.
-- `src/firebase-config.js` — environment-based Firebase client initialization.
-- `src/auth.jsx` — account sign-in, creation, and password recovery.
-- `src/training-store.js` — Firebase storage, live subscriptions, and validated writes.
+- `src/main.jsx`, `src/App.jsx`, `src/WorkoutApp.jsx` — mounting, authentication entry, and application composition.
+- `src/pages/` — authentication, setup, planner, history, and progress screens.
+- `src/components/` — feature components, layout, workout logging, charts, and dialogs.
+- `src/hooks/` — planner state, authentication, draft recovery, drag gestures, and timer lifecycle.
+- `src/functions/` — pure session edits, normalization, state validation, and progress calculations.
+- `src/utils/` — reusable formatting helpers.
+- `src/services/` — Firebase, authentication, cloud storage, browser drafts, and optional browser integration.
+- `src/styles.css`, `src/styles/` — ordered stylesheet entry point and responsive dark theme by area.
 - `firestore.rules` — account isolation and document validation.
 - `firebase.json` — rule deployment and local emulator configuration.
 - `.github/workflows/deploy-pages.yml` — build, Firebase configuration checks, and GitHub Pages deployment.
-- `shared/training.mjs` — schedules, validation, progression, records, and date helpers.
+- `shared/catalog/`, `shared/functions/`, `shared/utils/` — exercise/schedule definitions, training rules, validation, metrics, and date helpers.
+- `shared/training.mjs` — stable named exports for the shared training API.
 - `tests/` — training-rule and browser-flow tests.
+
+See [Code organization](docs/architecture.md) for dependency rules, data flow, and where to make future changes.
 
 The optional `read_training_plan` WebMCP browser tool is feature-detected. Regular browsers do not need WebMCP support.

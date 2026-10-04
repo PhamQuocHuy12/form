@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { EXERCISES } from "../shared/training.mjs";
+import { useState, useRef, useEffect } from "react";
+
+import { EXERCISES } from "../../shared/catalog/exercises.mjs";
 
 export function useExerciseDrag(ids, setIds, busy) {
   const listRef = useRef(null);

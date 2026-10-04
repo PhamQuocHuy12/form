@@ -1,3 +1,17 @@
+import { DEFAULT_SETTINGS } from "../../shared/catalog/plans.mjs";
+import {
+  validateRoutine,
+  assertWorkoutVersion,
+  validateWorkoutUpdate,
+  validateSettings,
+  validateTarget,
+  validateWorkout,
+} from "../../shared/functions/validation.mjs";
+import {
+  emptyTrainingState,
+  checkedState,
+} from "../functions/training-state.js";
+import { cloudError, confirmWrite } from "./cloud-errors.js";
 import {
   collection,
   doc,
@@ -5,95 +19,6 @@ import {
   runTransaction,
   setDoc,
 } from "firebase/firestore";
-import {
-  DEFAULT_SETTINGS,
-  validateSettings,
-  validateTarget,
-  validateWorkout,
-  validateWorkoutUpdate,
-  validateRoutine,
-  assertWorkoutVersion,
-} from "../shared/training.mjs";
-
-export function emptyTrainingState() {
-  return {
-    settings: { ...DEFAULT_SETTINGS },
-    targets: {},
-    workouts: [],
-    routines: {},
-  };
-}
-
-export function cloudError(error, operation) {
-  if (error?.code === "permission-denied" && operation === "plan")
-    return "Plan saving was denied. Check that the latest firestore.rules are published in Firebase Console → Firestore Database → Rules, including support for custom weekdays and exercises. Your selections are still open; retry after publishing.";
-  if (error?.code === "permission-denied" && operation === "workout")
-    return "This workout could not be changed. Publish the latest firestore.rules in Firebase Console → Firestore Database → Rules to enable editing and deletion, then retry.";
-  if (error?.code === "permission-denied")
-    return "Cloud access was denied. Publish the latest firestore.rules in Firebase Console → Firestore Database → Rules, including the routines path for custom exercises, then retry.";
-  if (error?.code === "unavailable")
-    return "Cloud storage is unavailable. Check your connection and try again.";
-  return "Your cloud data could not be loaded or saved. Please try again.";
-}
-
-function confirmWrite(promise, operation) {
-  // Firestore queues writes offline. Keep the draft if server acknowledgement is delayed.
-  let timeout;
-  const deadline = new Promise((_, reject) => {
-    timeout = setTimeout(
-      () =>
-        reject(
-          new Error(
-            "Saving could not be confirmed. Keep your workout open and retry when you’re connected.",
-          ),
-        ),
-      15000,
-    );
-  });
-  return Promise.race([promise, deadline])
-    .catch((error) => {
-      if (error.code) throw new Error(cloudError(error, operation));
-      throw error;
-    })
-    .finally(() => clearTimeout(timeout));
-}
-
-function checkedState(state) {
-  const settings = validateSettings(state.settings);
-  const targets = Object.fromEntries(
-    Object.entries(state.targets).map(([id, value]) => {
-      if (value.id !== id) throw new Error("Invalid saved target.");
-      return [id, validateTarget(value)];
-    }),
-  );
-  const workouts = state.workouts
-    .map((value) => {
-      const valid = validateWorkout(value);
-      if (
-        typeof value.finishedAt !== "string" ||
-        !Number.isFinite(Date.parse(value.finishedAt))
-      )
-        throw new Error("Invalid saved workout date.");
-      if (
-        value.revision !== undefined &&
-        (!Number.isSafeInteger(value.revision) || value.revision < 0)
-      )
-        throw new Error("Invalid saved workout version.");
-      return {
-        ...valid,
-        finishedAt: value.finishedAt,
-        revision: value.revision ?? 0,
-      };
-    })
-    .sort((a, b) => b.finishedAt.localeCompare(a.finishedAt));
-  const routines = Object.fromEntries(
-    Object.entries(state.routines ?? {}).map(([id, value]) => {
-      if (value.id !== id) throw new Error("Invalid saved exercise list.");
-      return [id, validateRoutine(value)];
-    }),
-  );
-  return { settings, targets, workouts, routines };
-}
 
 export function createCloudStore(database, uid) {
   if (!uid || uid.includes("/"))

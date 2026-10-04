@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { test as base, expect } from "@playwright/test";
 import { initializeTestEnvironment } from "@firebase/rules-unit-testing";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import { createCloudStore } from "../../src/training-store.js";
+import { createCloudStore } from "../../src/services/training-store.js";
 import { DEFAULT_SETTINGS, PLANS, monday } from "../../shared/training.mjs";
 
 export async function signIn(page, account) {

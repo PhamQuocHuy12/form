@@ -1,0 +1,82 @@
+.history-view,
+.progress-view {
+  min-height: 60vh;
+}
+/* Keep compact metadata secondary while maintaining readable controls. */
+.exercise-info h3 {
+  font-size: 14px;
+}
+.exercise-info > span,
+.exercise-target span,
+.exercise-rest span,
+.day-footer,
+.session-strip p,
+.session-strip strong span,
+.balance-card > p,
+.progression-card p,
+.weekly-card-foot {
+  font-size: 12px;
+}
+.exercise-target strong,
+.exercise-rest strong {
+  font-size: 14px;
+}
+.weight-button {
+  font-size: 12px;
+  min-height: 35px;
+}
+.session-strip strong {
+  font-size: 14px;
+}
+.muscle-list > div > span,
+.muscle-list strong {
+  font-size: 12px;
+}
+.muscle-list small {
+  font-size: 11px;
+}
+.small-label,
+.section-kicker,
+.workspace-label,
+.eyebrow,
+.progression-card .small-label {
+  font-size: 11px;
+}
+.progression-card button {
+  font-size: 13px;
+}
+.weekly-card .small-label {
+  font-size: 11px;
+}
+.local-label {
+  font-size: 12px;
+}
+.session-strip > div {
+  flex: 1;
+}
+.weekly-card > p {
+  font-size: 13px;
+}
+.balance-card h3 {
+  font-size: 15px;
+}
+.day-description {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+.day-footer {
+  font-size: 11px;
+}
+.workout-bottom > span {
+  font-size: 12px;
+}
+.nav-item {
+  min-height: 47px;
+}
+.week-controls button {
+  min-width: 36px;
+  min-height: 36px;
+}

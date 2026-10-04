@@ -1,11 +1,7 @@
-import {
-  EXERCISES,
-  PLANS,
-  MAX_EXERCISES,
-  isDateKey,
-  monday,
-  validateTarget,
-} from "../shared/training.mjs";
+import { MAX_EXERCISES, EXERCISES } from "../../shared/catalog/exercises.mjs";
+import { PLANS } from "../../shared/catalog/plans.mjs";
+import { monday, isDateKey } from "../../shared/utils/dates.mjs";
+import { validateTarget } from "../../shared/functions/validation.mjs";
 
 export const DRAFT_STORAGE_WARNING =
   "Your browser could not protect this draft after closing. Keep this tab open until you save your workout, and allow site storage to enable recovery.";

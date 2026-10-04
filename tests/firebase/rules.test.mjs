@@ -14,7 +14,7 @@ import {
   collection,
   deleteDoc,
 } from "firebase/firestore";
-import { createCloudStore } from "../../src/training-store.js";
+import { createCloudStore } from "../../src/services/training-store.js";
 import { PLANS, EXERCISES } from "../../shared/training.mjs";
 
 const workout = () => ({
