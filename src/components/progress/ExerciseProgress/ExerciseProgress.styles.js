@@ -3,8 +3,8 @@ import { css } from "@linaria/core";
 export const exerciseProgressCard = css`
   padding: 25px;
   margin: 25px 0;
-  border: 1px solid #39472c;
-  background: #1c2318;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-muted);
   border-radius: 11px;
   min-width: 0;
   @media (max-width: 760px) {
@@ -29,7 +29,7 @@ export const exerciseProgressToolbar = css`
   }
   & p {
     font-size: 13px;
-    color: #9eb18a;
+    color: var(--muted);
     line-height: 1.7;
     margin-top: 8px;
   }
@@ -46,7 +46,7 @@ export const exerciseProgressControls = css`
     min-width: 0;
     flex: 1 1 150px;
     font-size: 12px;
-    color: #b7c6a4;
+    color: var(--text-secondary);
   }
   & label:first-child {
     flex-basis: 220px;
@@ -72,7 +72,7 @@ export const exerciseProgressControls = css`
 
 export const exerciseProgressPeriod = css`
   font-size: 13px;
-  color: #9eb18a;
+  color: var(--muted);
   line-height: 1.7;
   margin-top: 8px;
   margin: 16px 0;

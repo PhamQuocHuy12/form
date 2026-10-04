@@ -2,8 +2,8 @@ import { css } from "@linaria/core";
 
 export const chartCard = css`
   padding: 25px;
-  border: 1px solid #39472c;
-  background: #1c2318;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-muted);
   border-radius: 11px;
   & h3 {
     font-size: 18px;
@@ -11,7 +11,7 @@ export const chartCard = css`
   }
   & p {
     font-size: 13px;
-    color: #9eb18a;
+    color: var(--muted);
     line-height: 1.7;
     margin-top: 8px;
   }
@@ -42,11 +42,11 @@ export const chartColumn = css`
   gap: 10px;
   & > span {
     font-size: 13px;
-    color: #c2d5a7;
+    color: var(--text-secondary);
   }
   & small {
     font-size: 11px;
-    color: #91a37e;
+    color: var(--muted);
     white-space: nowrap;
   }
   @media (max-width: 760px) {
@@ -66,7 +66,7 @@ export const chartBarSpace = css`
     display: block;
     width: 100%;
     border-radius: 5px 5px 0 0;
-    background: #5a6d3e;
+    background: var(--surface-selected);
   }
   & .current-bar {
     background: var(--accent);

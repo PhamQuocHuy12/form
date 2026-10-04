@@ -14,12 +14,12 @@ export const insightColumn = css`
 `;
 
 export const weeklyCard = css`
-  background: #252c1d;
-  border: 1px solid #414b2e;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
   border-radius: 12px;
   padding: 22px;
   & > p {
-    color: #a6b391;
+    color: var(--text-secondary);
     margin-top: 5px;
   }
   @media (max-width: 1250px) {
@@ -44,7 +44,7 @@ export const weeklyCard = css`
   & .small-label {
     display: flex;
     justify-content: space-between;
-    color: #becea0;
+    color: var(--text-secondary);
   }
   @media (max-width: 760px) {
     & .small-label {
@@ -66,7 +66,7 @@ export const completionCount = css`
   & span {
     font-size: 24px;
     font-weight: 400;
-    color: #7e8b69;
+    color: var(--text-subtle);
     margin-left: 5px;
   }
   @media (max-width: 760px) {
@@ -84,7 +84,7 @@ export const progressSegments = css`
     flex: 1;
     height: 5px;
     border-radius: 4px;
-    background: #414c30;
+    background: var(--surface-selected);
   }
   & .filled {
     background: var(--accent);
@@ -99,9 +99,9 @@ export const progressSegments = css`
 `;
 
 export const weeklyCardFoot = css`
-  border-top: 1px solid #3a452b;
+  border-top: 1px solid var(--line-strong);
   padding-top: 14px;
-  color: #b3c198;
+  color: var(--text-secondary);
   display: flex;
   gap: 7px;
   align-items: center;
@@ -125,7 +125,7 @@ export const balanceCard = css`
   padding: 21px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #1b1e19;
+  background: var(--surface-muted);
   & h3 {
     font-weight: 600;
     display: flex;
@@ -133,10 +133,10 @@ export const balanceCard = css`
     align-items: center;
   }
   & h3 svg {
-    color: #909c7c;
+    color: var(--muted);
   }
   & > p {
-    color: #8c977f;
+    color: var(--muted);
     margin-top: 7px;
   }
   @media (max-width: 1250px) {
@@ -183,15 +183,15 @@ export const muscleList = css`
   }
   & > div > span {
     width: 59px;
-    color: #abb59d;
+    color: var(--text-secondary);
   }
   & strong {
     text-align: right;
     font-weight: 500;
-    color: #aebc99;
+    color: var(--text-secondary);
   }
   & small {
-    color: #778368;
+    color: var(--text-subtle);
   }
   @media (max-width: 760px) {
     & {
@@ -238,13 +238,13 @@ export const muscleList = css`
 export const muscleTrack = css`
   flex: 1;
   height: 4px;
-  background: #313829;
+  background: var(--surface-raised);
   border-radius: 3px;
   overflow: hidden;
   & i {
     display: block;
     height: 100%;
-    background: #a9be79;
+    background: var(--chart-bar);
     border-radius: 3px;
   }
   @media (max-width: 760px) {
@@ -256,10 +256,15 @@ export const muscleTrack = css`
 
 export const progressionCard = css`
   padding: 23px;
-  border: 1px solid #333b29;
+  border: 1px solid var(--line);
   border-radius: 12px;
   background:
-    radial-gradient(ellipse at top right, #30391f, transparent 70%), #1d2318;
+    radial-gradient(
+      ellipse at top right,
+      var(--surface-raised),
+      transparent 70%
+    ),
+    var(--surface-muted);
   & h3 {
     font:
       600 23px/1.35 Manrope,
@@ -268,7 +273,7 @@ export const progressionCard = css`
     margin: 9px 0 11px;
   }
   & p {
-    color: #95a184;
+    color: var(--muted);
     line-height: 1.8;
   }
   & button {
@@ -277,10 +282,10 @@ export const progressionCard = css`
     justify-content: space-between;
     width: 100%;
     background: transparent;
-    color: #c2d696;
+    color: var(--text-secondary);
     padding: 17px 0 0;
     margin-top: 18px;
-    border-top: 1px solid #3a452e;
+    border-top: 1px solid var(--line-strong);
   }
   @media (max-width: 1250px) {
     & {
@@ -319,7 +324,7 @@ export const progressionCard = css`
     display: block;
   }
   & .small-label {
-    color: #8f9d7b;
+    color: var(--muted);
   }
   @media (max-width: 760px) {
     & .small-label {
@@ -341,9 +346,9 @@ export const progressionIcon = css`
   height: 37px;
   display: grid;
   place-items: center;
-  background: #354024;
-  color: #d1e6a0;
-  border: 1px solid #475a2c;
+  background: var(--surface-selected);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
   border-radius: 9px;
   margin-bottom: 19px;
   @media (max-width: 760px) {

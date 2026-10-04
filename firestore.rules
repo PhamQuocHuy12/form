@@ -69,6 +69,13 @@ service cloud.firestore {
         && request.resource.data.strategy in ['weight','reps','sets']
         && (!('weekdays' in request.resource.data) || validWeekdays(request.resource.data));
     }
+    match /users/{uid}/preferences/appearance {
+      allow read: if owner(uid);
+      allow create, update: if owner(uid)
+        && request.resource.data.keys().hasAll(['theme'])
+        && request.resource.data.keys().hasOnly(['theme'])
+        && request.resource.data.theme in ['dark','light','system'];
+    }
     match /users/{uid}/targets/{id} {
       allow read: if owner(uid);
       allow create, update: if owner(uid) && request.resource.data.id == id && validTarget(request.resource.data);

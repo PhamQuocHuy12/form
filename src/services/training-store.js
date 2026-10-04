@@ -1,5 +1,9 @@
 import { DEFAULT_SETTINGS } from "../../shared/catalog/plans.mjs";
 import {
+  DEFAULT_APPEARANCE,
+  validateAppearance,
+} from "../../shared/functions/appearance.mjs";
+import {
   validateRoutine,
   assertWorkoutVersion,
   validateWorkoutUpdate,
@@ -40,6 +44,51 @@ export function createCloudStore(database, uid) {
     );
   }
   return {
+    subscribeAppearance(next, error) {
+      const timeout = setTimeout(
+        () =>
+          error(
+            new Error(
+              "Your saved theme is taking too long to load. Check your connection and retry theme sync.",
+            ),
+          ),
+        15000,
+      );
+      const unsubscribe = onSnapshot(
+        reference("preferences", "appearance"),
+        { includeMetadataChanges: true },
+        (snapshot) => {
+          if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites)
+            return;
+          clearTimeout(timeout);
+          try {
+            next(
+              snapshot.exists()
+                ? validateAppearance(snapshot.data())
+                : { ...DEFAULT_APPEARANCE },
+            );
+          } catch (err) {
+            error(err);
+          }
+        },
+        (err) => {
+          clearTimeout(timeout);
+          error(new Error(cloudError(err, "appearance")));
+        },
+      );
+      return () => {
+        clearTimeout(timeout);
+        unsubscribe();
+      };
+    },
+    async saveAppearance(value) {
+      const appearance = validateAppearance(value);
+      await confirmWrite(
+        setDoc(reference("preferences", "appearance"), appearance),
+        "appearance",
+      );
+      return appearance;
+    },
     async updateWorkout(value) {
       return confirmWrite(
         runTransaction(database, async (transaction) => {

@@ -7,15 +7,15 @@ export const statGrid = css`
   margin-bottom: 25px;
   & > div {
     padding: 25px;
-    border: 1px solid #3c4a30;
+    border: 1px solid var(--line-strong);
     border-radius: 11px;
-    background: #1f2819;
+    background: var(--surface-raised);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
   & svg {
-    color: #b9d28d;
+    color: var(--text-secondary);
   }
   & strong {
     font:
@@ -26,13 +26,13 @@ export const statGrid = css`
   }
   & strong small {
     font-size: 18px;
-    color: #9baa89;
+    color: var(--muted);
     font-weight: 400;
     letter-spacing: 0;
   }
   & > div > span {
     font-size: 13px;
-    color: #a1b58a;
+    color: var(--text-secondary);
     margin-top: 7px;
   }
   @media (max-width: 760px) {

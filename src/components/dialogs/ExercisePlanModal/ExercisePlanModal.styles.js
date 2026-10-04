@@ -23,7 +23,7 @@ export const routineEditor = css`
     height: 3px;
     border-radius: 3px;
     background: var(--accent);
-    box-shadow: 0 0 10px #e8fc7340;
+    box-shadow: 0 0 10px var(--accent-glow);
   }
   & .drop-after::after {
     content: "";
@@ -33,7 +33,7 @@ export const routineEditor = css`
     height: 3px;
     border-radius: 3px;
     background: var(--accent);
-    box-shadow: 0 0 10px #e8fc7340;
+    box-shadow: 0 0 10px var(--accent-glow);
   }
   & .drop-before::before {
     top: -2px;
@@ -78,8 +78,8 @@ export const routineDragPreview = css`
   box-sizing: border-box;
   border: 1px solid var(--accent);
   border-radius: 10px;
-  background: #29321e;
-  box-shadow: 0 10px 30px #0008;
+  background: var(--surface-raised);
+  box-shadow: 0 10px 30px var(--shadow);
   pointer-events: none;
   & > svg {
     color: var(--accent);

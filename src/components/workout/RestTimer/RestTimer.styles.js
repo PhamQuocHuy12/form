@@ -4,12 +4,12 @@ export const restTimer = css`
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #2b3521;
-  border: 1px solid #455635;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
   border-radius: 9px;
   padding: 8px 13px;
   margin: 18px 0;
-  color: #c8daa9;
+  color: var(--text-secondary);
   position: sticky;
   top: 0;
   z-index: 2;

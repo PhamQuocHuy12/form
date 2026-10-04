@@ -8,22 +8,22 @@ export const draftRecovery = css`
   gap: 16px;
   margin: 20px 0;
   padding: 18px;
-  border: 1px solid #455635;
+  border: 1px solid var(--line-strong);
   border-radius: 9px;
-  background: #252f1e;
+  background: var(--surface-raised);
   & strong {
     font-size: 15px;
-    color: #d6e5bf;
+    color: var(--text);
   }
   & p {
     margin: 7px 0;
     font-size: 13px;
-    color: #b1c397;
+    color: var(--text-secondary);
   }
   & small {
     font-size: 12px;
     line-height: 1.5;
-    color: #a4b38f;
+    color: var(--text-secondary);
   }
 `;
 

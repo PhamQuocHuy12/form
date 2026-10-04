@@ -75,6 +75,7 @@ Cloud paths:
 
 ```text
 users/{uid}/preferences/main
+users/{uid}/preferences/appearance
 users/{uid}/targets/{exerciseId}
 users/{uid}/workouts/{workoutId}
 users/{uid}/routines/{dayId}
@@ -102,8 +103,11 @@ After upgrading to exercise customization and history editing, publish the **ful
 - Adjustable progression by weight, reps, or sets.
 - Keyboard-accessible dialogs, responsive layouts, and mobile bottom navigation.
 - Email/password sign-in, account creation, password recovery, and sign-out.
+- **Appearance** in the top bar offers Dark, Light, and System themes. The choice saves separately from the training plan and syncs live across browsers and devices signed into the same account. System follows each device’s display setting, including changes while the app is open. Existing accounts default to Dark.
 - Cloud history and plan settings scoped to the signed-in user, with live updates.
 - Custom weekdays save with plan settings in Firestore. After updating from an earlier version, republish `firestore.rules` to allow the new optional `weekdays` field.
+
+Theme sync requires publishing the full latest `firestore.rules`, which adds the owner-only `users/{uid}/preferences/appearance` document. Earlier rules deny this path; workouts still load and the Appearance dialog explains how to enable theme sync. A small per-account browser cache restores the last confirmed appearance while Firestore loads. The cache is optional, contains only the theme, and resets to Dark for accounts without a saved choice. Theme saves report success only after cloud acknowledgement; failed saves keep the dialog and selection open for retry.
 
 ## Progression rules
 

@@ -14,9 +14,9 @@ export const fieldset = css`
 `;
 
 export const field = css`
-  color: #e6ebdc;
-  background: #141910;
-  border: 1px solid #485539;
+  color: var(--text);
+  background: var(--surface-input);
+  border: 1px solid var(--line-strong);
   border-radius: 6px;
   padding: 11px 12px;
   width: 100%;

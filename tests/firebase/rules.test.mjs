@@ -88,6 +88,23 @@ test("Firestore rules isolate accounts and validate customized plans and workout
   const log = (database) =>
     doc(database, "users/alice/workouts/test-cloud-workout-001");
   const routine = (database) => doc(database, "users/alice/routines/upper-a");
+  const appearance = (database) =>
+    doc(database, "users/alice/preferences/appearance");
+  for (const theme of ["dark", "light", "system"])
+    await assertSucceeds(setDoc(appearance(alice), { theme }));
+  for (const value of [
+    {},
+    { theme: "blue" },
+    { theme: null },
+    { theme: "light", days: 3 },
+  ])
+    await assertFails(setDoc(appearance(alice), value));
+  await assertSucceeds(getDoc(appearance(alice)));
+  for (const database of [bob, anonymous]) {
+    await assertFails(getDoc(appearance(database)));
+    await assertFails(setDoc(appearance(database), { theme: "light" }));
+  }
+  await assertFails(deleteDoc(appearance(alice)));
   await assertSucceeds(
     setDoc(routine(alice), {
       id: "upper-a",

@@ -5,11 +5,11 @@ export const tag = css`
     500 10px "DM Sans",
     sans-serif;
   letter-spacing: 0;
-  color: #bfcaa7;
+  color: var(--text-secondary);
   padding: 5px 8px;
-  border: 1px solid #424b32;
+  border: 1px solid var(--line-strong);
   border-radius: 5px;
-  background: #2a3122;
+  background: var(--surface-raised);
   @media (max-width: 1250px) {
     .workout-heading h2 & {
       display: none;
@@ -42,7 +42,7 @@ export const viewToolbar = css`
   }
   & p {
     font-size: 14px;
-    color: #98a78a;
+    color: var(--muted);
     line-height: 1.7;
     margin-top: 8px;
   }
@@ -63,7 +63,7 @@ export const filterLabel = css`
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: #a7b898;
+  color: var(--text-secondary);
   white-space: nowrap;
   & select {
     width: 160px;
@@ -79,17 +79,17 @@ export const filterLabel = css`
 export const emptyState = css`
   padding: 70px 25px;
   text-align: center;
-  border: 1px dashed #485837;
+  border: 1px dashed var(--line-strong);
   border-radius: 13px;
-  background: #1a2015;
+  background: var(--surface-muted);
   & > span {
     height: 66px;
     width: 66px;
     display: grid;
     place-items: center;
-    border: 1px solid #465c30;
-    background: #2b3821;
-    color: #cbe7a0;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-raised);
+    color: var(--text);
     border-radius: 18px;
     margin: 0 auto 24px;
   }
@@ -99,7 +99,7 @@ export const emptyState = css`
       sans-serif;
   }
   & p {
-    color: #a4b691;
+    color: var(--text-secondary);
     font-size: 15px;
     max-width: 400px;
     margin: 15px auto 25px;
@@ -116,7 +116,7 @@ export const emptyState = css`
 `;
 
 export const textButton = css`
-  color: #d5eca9;
+  color: var(--text);
   background: transparent;
   padding: 15px 0;
   font-size: 14px;

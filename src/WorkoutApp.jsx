@@ -3,7 +3,7 @@ import {
   loading,
   toast,
 } from "./components/common/styles/Feedback.styles.js";
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Check } from "lucide-react";
 import { HistoryPage } from "./pages/HistoryPage/HistoryPage.jsx";
 import { ProgressPage } from "./pages/ProgressPage/ProgressPage.jsx";
@@ -15,9 +15,14 @@ import { PlannerPage } from "./pages/PlannerPage/PlannerPage.jsx";
 import { useWorkoutPlanner } from "./hooks/useWorkoutPlanner.js";
 import { useTrainingPlanTool } from "./hooks/useTrainingPlanTool.js";
 import { WorkoutDialogs } from "./components/dialogs/WorkoutDialogs/WorkoutDialogs.jsx";
+import { AppearanceModal } from "./components/dialogs/AppearanceModal/AppearanceModal.jsx";
+import { useAppearance } from "./hooks/useAppearance.js";
 
 export function WorkoutApp({ store, user }) {
   const planner = useWorkoutPlanner(store, user);
+  const appearance = useAppearance(store, user.uid);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const closeAppearance = useCallback(() => setAppearanceOpen(false), []);
   const {
     state,
     loaded,
@@ -45,6 +50,7 @@ export function WorkoutApp({ store, user }) {
         user={user}
         signingOut={signingOut}
         logout={logout}
+        onAppearance={() => setAppearanceOpen(true)}
       >
         <PageHeading
           view={view}
@@ -123,6 +129,9 @@ export function WorkoutApp({ store, user }) {
         )}
       </AppLayout>
       <WorkoutDialogs planner={planner} />
+      {appearanceOpen && (
+        <AppearanceModal controller={appearance} onClose={closeAppearance} />
+      )}
       {toast && (
         <div className={`${toast} toast`} role="status">
           <Check size={18} />

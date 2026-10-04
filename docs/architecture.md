@@ -62,6 +62,8 @@ The workout logger uses `SessionModal` for submission, `ExerciseLog` for each mo
 
 Progress pages calculate an overview with `src/functions/progress.js`. Shared metrics produce the chart data, while progress components handle presentation and point selection.
 
+`useAppearance` subscribes independently to `users/{uid}/preferences/appearance` through the cloud store. Appearance failures do not block training data. The validated theme choice is account scoped; a best-effort browser cache gives a startup hint, and acknowledged Firestore snapshots replace it. The hook applies `data-theme` to the document root, observes device color-scheme changes for System mode, and cleans up on sign-out. Components use semantic CSS variables from `src/styles/theme.css` for surfaces, text, status colors, and charts. Theme and plan writes use separate documents so they cannot overwrite each other.
+
 ## Dependency rules
 
 - Pages compose components and call pure calculations; persistence goes through callbacks from their controller.

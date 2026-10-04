@@ -1,7 +1,7 @@
 import { css } from "@linaria/core";
 
 export const logExercise = css`
-  border: 1px solid #39442f;
+  border: 1px solid var(--line-strong);
   border-radius: 9px;
   margin: 14px 0;
   overflow: hidden;
@@ -10,7 +10,7 @@ export const logExercise = css`
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: #242c1e;
+    background: var(--surface-raised);
   }
   & > summary > span:nth-child(2) {
     flex: 1;
@@ -23,7 +23,7 @@ export const logExercise = css`
   & summary small {
     display: block;
     font-size: 12px;
-    color: #a4b38f;
+    color: var(--text-secondary);
     margin-top: 5px;
   }
   @media (max-width: 760px) {
@@ -38,13 +38,13 @@ export const logExNumber = css`
   width: 30px;
   display: grid;
   place-items: center;
-  background: #313d26;
-  color: #bbd199;
+  background: var(--surface-selected);
+  color: var(--text-secondary);
   border-radius: 6px;
   font-size: 12px;
   &.is-done {
     background: var(--accent);
-    color: #243210;
+    color: var(--ink);
   }
 `;
 
@@ -67,13 +67,13 @@ export const logExerciseTip = css`
     flex: 1 1 200px;
     font-size: 13px;
     line-height: 1.6;
-    color: #9dab8e;
+    color: var(--muted);
   }
 `;
 
 export const completeExercise = css`
   background: transparent;
-  color: #c8df9f;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -9,7 +9,7 @@ export const setGrid = css`
   text-align: center;
   & > span {
     font-size: 14px;
-    color: #a6b98f;
+    color: var(--text-secondary);
   }
   & input {
     text-align: center;
@@ -20,8 +20,8 @@ export const setGrid = css`
     letter-spacing: 1px;
   }
   &:where(.set-done) input[type="number"] {
-    border-color: #6b8543;
-    background: #27351b;
+    border-color: var(--line-accent);
+    background: var(--surface-raised);
   }
   @media (max-width: 760px) {
     & {
@@ -54,15 +54,15 @@ export const setCheck = css`
     height: 38px;
     display: grid;
     place-items: center;
-    border: 1px solid #4a593a;
+    border: 1px solid var(--line-strong);
     border-radius: 6px;
     color: transparent;
-    background: #232d1a;
+    background: var(--surface-raised);
   }
   & input:checked + span {
     background: var(--accent);
     border-color: var(--accent);
-    color: #23310f;
+    color: var(--ink);
   }
   & input:focus-visible + span {
     outline: 2px solid var(--accent);

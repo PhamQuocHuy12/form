@@ -41,10 +41,10 @@ export const weekIcon = css`
   place-items: center;
   width: 39px;
   height: 39px;
-  background: #25291f;
-  border: 1px solid #353b2a;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  color: #b2bca3;
+  color: var(--text-secondary);
   @media (max-width: 760px) {
     & {
       display: none;
@@ -81,7 +81,7 @@ export const todayButton = css`
   .week-controls & {
     padding: 0 13px;
     font-size: 12px;
-    color: #bdc4b3;
+    color: var(--text-secondary);
   }
   @media (max-width: 760px) {
     .week-controls & {

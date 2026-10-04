@@ -3,13 +3,13 @@ import { css } from "@linaria/core";
 export const lastPerformance = css`
   margin-bottom: 17px;
   padding: 12px;
-  border: 1px solid #39442f;
+  border: 1px solid var(--line-strong);
   border-radius: 7px;
-  background: #20291b;
+  background: var(--surface-raised);
   & > p {
     font-size: 12px;
     line-height: 1.5;
-    color: #a4b38f;
+    color: var(--text-secondary);
     margin: 6px 0 0;
   }
 `;
@@ -21,12 +21,12 @@ export const lastPerformanceHeading = css`
   gap: 5px 12px;
   & > strong {
     font-size: 13px;
-    color: #c8df9f;
+    color: var(--text-secondary);
   }
   & > span {
     font-size: 12px;
     line-height: 1.5;
-    color: #a4b38f;
+    color: var(--text-secondary);
   }
 `;
 
@@ -44,12 +44,12 @@ export const lastPerformanceSets = css`
     gap: 4px 8px;
     padding: 6px 9px;
     border-radius: 5px;
-    background: #2b3523;
+    background: var(--surface-raised);
     font-size: 12px;
     line-height: 1.5;
   }
   & li > span {
-    color: #a4b38f;
+    color: var(--text-secondary);
   }
   & li > strong {
     font-weight: 500;

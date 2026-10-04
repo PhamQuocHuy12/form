@@ -2,7 +2,7 @@ import { css } from "@linaria/core";
 
 export const singleProgressHint = css`
   font-size: 13px;
-  color: #9eb18a;
+  color: var(--muted);
   line-height: 1.7;
   margin-top: 8px;
 `;
@@ -26,9 +26,9 @@ export const exerciseTrendSelection = css`
   padding: 16px 0;
   font-size: 12px;
   line-height: 1.7;
-  color: #a4b38f;
+  color: var(--text-secondary);
   & strong {
-    color: #d6edab;
+    color: var(--text);
     font-size: 15px;
     font-variant-numeric: tabular-nums;
   }
@@ -36,20 +36,20 @@ export const exerciseTrendSelection = css`
 
 export const emptyExerciseProgress = css`
   padding: 40px 15px;
-  color: #a4b38f;
+  color: var(--text-secondary);
   text-align: center;
   line-height: 1.7;
   font-size: 13px;
-  border: 1px dashed #455635;
+  border: 1px dashed var(--line-strong);
   border-radius: 9px;
 `;
 
 export const exerciseProgressData = css`
-  border-top: 1px solid #39472c;
+  border-top: 1px solid var(--line-strong);
   & summary {
     padding: 14px 0;
     font-size: 13px;
-    color: #d5eca9;
+    color: var(--text);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -61,20 +61,20 @@ export const exerciseProgressData = css`
   }
   & th {
     padding: 12px 10px;
-    border-top: 1px solid #39472c;
+    border-top: 1px solid var(--line-strong);
     line-height: 1.6;
   }
   & td {
     padding: 12px 10px;
-    border-top: 1px solid #39472c;
+    border-top: 1px solid var(--line-strong);
     line-height: 1.6;
   }
   & th {
-    color: #b7c6a4;
+    color: var(--text-secondary);
     font-weight: 500;
   }
   & td {
-    color: #d6e5bf;
+    color: var(--text);
   }
 `;
 

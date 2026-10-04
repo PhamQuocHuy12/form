@@ -1,4 +1,6 @@
 export function cloudError(error, operation) {
+  if (error?.code === "permission-denied" && operation === "appearance")
+    return "Theme sync is unavailable. Publish the latest firestore.rules in Firebase Console → Firestore Database → Rules to enable appearance preferences, then retry.";
   if (error?.code === "permission-denied" && operation === "plan")
     return "Plan saving was denied. Check that the latest firestore.rules are published in Firebase Console → Firestore Database → Rules, including support for custom weekdays and exercises. Your selections are still open; retry after publishing.";
   if (error?.code === "permission-denied" && operation === "workout")
@@ -18,7 +20,9 @@ export function confirmWrite(promise, operation) {
       () =>
         reject(
           new Error(
-            "Saving could not be confirmed. Keep your workout open and retry when you’re connected.",
+            operation === "appearance"
+              ? "Theme saving could not be confirmed. Keep this dialog open and retry when you’re connected."
+              : "Saving could not be confirmed. Keep your workout open and retry when you’re connected.",
           ),
         ),
       15000,

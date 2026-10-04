@@ -3,14 +3,14 @@ import { css } from "@linaria/core";
 export const smallLabel = css`
   letter-spacing: 1.4px;
   font-weight: 700;
-  color: #acb499;
+  color: var(--text-secondary);
   font-size: 11px;
 `;
 
 export const eyebrow = css`
   font-weight: 700;
   letter-spacing: 1.8px;
-  color: #b0b99c;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 7px;

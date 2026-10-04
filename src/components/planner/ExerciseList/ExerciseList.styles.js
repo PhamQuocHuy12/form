@@ -27,7 +27,7 @@ export const exerciseRow = css`
   align-items: center;
   gap: 12px;
   padding: 19px 0;
-  border-bottom: 1px solid #2e3328;
+  border-bottom: 1px solid var(--line);
   &:last-child {
     border: 0;
   }
@@ -66,7 +66,7 @@ export const exerciseRow = css`
 
 export const exerciseNumber = css`
   font-size: 11px;
-  color: #727d65;
+  color: var(--text-subtle);
   width: 15px;
   @media (max-width: 760px) {
     & {
@@ -89,10 +89,10 @@ export const exerciseSymbol = css`
   height: 39px;
   display: grid;
   place-items: center;
-  border: 1px solid #3c4234;
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background: #2a2f24;
-  color: #abb698;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
   @media (max-width: 1250px) {
     & {
       display: none;
@@ -120,12 +120,12 @@ export const exerciseInfo = css`
     display: flex;
     align-items: center;
     gap: 7px;
-    color: #828e75;
+    color: var(--text-subtle);
     margin-top: 4px;
   }
   & b {
     font-weight: 400;
-    color: #657157;
+    color: var(--text-subtle);
   }
   @media (max-width: 760px) {
     & {
@@ -158,7 +158,7 @@ export const exerciseTarget = css`
     font-weight: 500;
   }
   & span {
-    color: #849075;
+    color: var(--text-subtle);
     display: block;
     margin-top: 4px;
   }
@@ -204,7 +204,7 @@ export const exerciseRest = css`
     font-weight: 500;
   }
   & span {
-    color: #849075;
+    color: var(--text-subtle);
     display: block;
     margin-top: 4px;
   }
@@ -273,10 +273,10 @@ export const weightButton = css`
   gap: 3px;
   padding: 7px 6px;
   min-width: 63px;
-  border: 1px dashed #515c3b;
+  border: 1px dashed var(--line-strong);
   border-radius: 5px;
   background: transparent;
-  color: #bdcb9c;
+  color: var(--text-secondary);
   @media (max-width: 760px) {
     & {
       margin-left: auto;

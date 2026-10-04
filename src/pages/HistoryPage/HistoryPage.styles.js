@@ -7,9 +7,9 @@ export const historyList = css`
 `;
 
 export const historyItem = css`
-  border: 1px solid #38452d;
+  border: 1px solid var(--line-strong);
   border-radius: 11px;
-  background: #1b2217;
+  background: var(--surface-muted);
   & summary {
     padding: 23px;
     display: flex;
@@ -28,10 +28,10 @@ export const historyItem = css`
 export const historyIcon = css`
   width: 43px;
   height: 43px;
-  border: 1px solid #4c5b3c;
+  border: 1px solid var(--line-strong);
   border-radius: 10px;
-  background: #2b3622;
-  color: #bfd6a0;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
   display: grid;
   place-items: center;
   @media (max-width: 760px) {
@@ -54,7 +54,7 @@ export const historyTitle = css`
     font-size: 12px;
     line-height: 1.6;
     display: block;
-    color: #94a780;
+    color: var(--muted);
     margin-top: 6px;
   }
   @media (max-width: 760px) {
@@ -72,15 +72,15 @@ export const statusTag = css`
   align-items: center;
   gap: 5px;
   border-radius: 5px;
-  background: #304322;
-  border: 1px solid #4d623c;
-  color: #bddb9e;
+  background: var(--surface-selected);
+  border: 1px solid var(--line-accent);
+  color: var(--text-secondary);
   padding: 6px 9px;
   font-size: 12px;
   &.partial {
-    color: #ddc397;
-    background: #3a3121;
-    border-color: #5d4a2b;
+    color: var(--warning-text);
+    background: var(--warning-bg);
+    border-color: var(--warning-line);
   }
   @media (max-width: 760px) {
     & {
@@ -102,12 +102,12 @@ export const historyStats = css`
   display: flex;
   gap: 24px;
   padding: 17px 0;
-  border-top: 1px solid #3a482e;
-  color: #9bab8a;
+  border-top: 1px solid var(--line-strong);
+  color: var(--muted);
   font-size: 13px;
   & strong {
     font-size: 18px;
-    color: #d6e7c4;
+    color: var(--text);
     margin-right: 5px;
   }
   @media (max-width: 760px) {
@@ -123,7 +123,7 @@ export const historyExercise = css`
   justify-content: space-between;
   gap: 20px;
   padding: 16px 0;
-  border-top: 1px solid #313d27;
+  border-top: 1px solid var(--line);
   align-items: center;
   & > strong {
     font-size: 14px;
@@ -137,8 +137,8 @@ export const historyExercise = css`
   }
   & small {
     font-size: 12px;
-    background: #2b3720;
-    color: #b8cda2;
+    background: var(--surface-raised);
+    color: var(--text-secondary);
     border-radius: 4px;
     padding: 5px 7px;
   }
@@ -155,14 +155,14 @@ export const historyExercise = css`
 `;
 
 export const savedNotes = css`
-  background: #26311e;
+  background: var(--surface-raised);
   padding: 16px;
   border-radius: 8px;
   margin-top: 15px;
   & > span {
     font-size: 11px;
     letter-spacing: 1px;
-    color: #a4b78d;
+    color: var(--text-secondary);
   }
   & > p {
     font-size: 14px;

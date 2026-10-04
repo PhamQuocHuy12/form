@@ -28,7 +28,7 @@ export const workoutPanel = css`
 export const sectionKicker = css`
   font-weight: 600;
   letter-spacing: 1.5px;
-  color: #9ba58a;
+  color: var(--muted);
   margin-bottom: 12px;
   font-size: 11px;
 `;
@@ -73,7 +73,7 @@ export const workoutHeading = css`
 
 export const workoutDuration = css`
   font-size: 12px;
-  color: #a1aa95;
+  color: var(--muted);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -100,33 +100,33 @@ export const sessionStrip = css`
   align-items: center;
   gap: 13px;
   padding: 15px 16px;
-  border: 1px solid #353d2a;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #262c20;
-  color: #becf91;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
   & strong {
     font-weight: 600;
-    color: #d6dfc5;
+    color: var(--text);
   }
   & strong span {
-    color: #a0ad8b;
+    color: var(--muted);
     font-weight: 400;
   }
   & p {
     line-height: 1.6;
-    color: #99a38c;
+    color: var(--muted);
     margin-top: 4px;
   }
   &:where(.cooldown) {
-    background: #20281f;
-    border-color: #303d2e;
-    color: #9cb394;
+    background: var(--surface-raised);
+    border-color: var(--line);
+    color: var(--muted);
   }
   &:where(.cooldown) strong {
-    color: #c1d0b9;
+    color: var(--text-secondary);
   }
   &:where(.cooldown) p {
-    color: #94a38c;
+    color: var(--muted);
   }
   @media (max-width: 760px) {
     & {
@@ -169,7 +169,7 @@ export const workoutBottom = css`
   margin-top: 22px;
   gap: 12px;
   & > span {
-    color: #929e82;
+    color: var(--muted);
     display: flex;
     align-items: center;
     gap: 7px;
@@ -222,7 +222,7 @@ export const recommendationContent = css`
   font-size: 14px;
   line-height: 1.7;
   padding: 8px 16px;
-  color: #b0bea0;
+  color: var(--text-secondary);
   & ol {
     padding-left: 17px;
   }

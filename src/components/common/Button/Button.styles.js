@@ -27,15 +27,15 @@ export const button = css`
   }
 
   &.secondary {
-    background: #20231d;
-    color: #d8ddce;
-    border: 1px solid #363b2e;
+    background: var(--surface-muted);
+    color: var(--text);
+    border: 1px solid var(--line);
   }
 
   &.danger {
-    background: #68372b;
-    color: #ffe9e3;
-    border: 1px solid #a25b47;
+    background: var(--danger-button);
+    color: var(--danger-ink);
+    border: 1px solid var(--danger-line);
   }
 
   &.full-width {

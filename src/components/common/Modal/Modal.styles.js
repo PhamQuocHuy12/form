@@ -3,7 +3,7 @@ import { css } from "@linaria/core";
 export const modalBackdrop = css`
   position: fixed;
   inset: 0;
-  background: #000a;
+  background: var(--backdrop);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -24,11 +24,11 @@ export const modalBackdrop = css`
 export const modal = css`
   width: 100%;
   max-width: 500px;
-  border: 1px solid #444d37;
+  border: 1px solid var(--line-strong);
   border-radius: 16px;
-  background: #1c2019;
+  background: var(--surface-muted);
   padding: 26px;
-  box-shadow: 0 25px 100px #0009;
+  box-shadow: 0 25px 100px var(--shadow-modal);
   max-height: 90dvh;
   overflow-y: auto;
   & > p {

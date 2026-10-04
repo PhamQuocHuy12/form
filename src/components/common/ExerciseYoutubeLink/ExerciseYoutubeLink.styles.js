@@ -11,7 +11,7 @@ export const exerciseYoutubeLink = css`
   border: 1px solid var(--line);
   border-radius: 6px;
   background: transparent;
-  color: #bdcb9c;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
@@ -21,7 +21,7 @@ export const exerciseYoutubeLink = css`
     flex-shrink: 0;
   }
   &:hover {
-    background: #2a3322;
+    background: var(--surface-raised);
     color: var(--accent);
   }
 `;

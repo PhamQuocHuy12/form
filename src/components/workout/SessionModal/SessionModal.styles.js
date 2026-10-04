@@ -10,7 +10,7 @@ export const sessionIntro = css`
   justify-content: space-between;
   gap: 12px;
   font-size: 12px;
-  color: #a7ba8f;
+  color: var(--text-secondary);
   margin: 23px 0 12px;
   & > span:first-child {
     letter-spacing: 1px;
@@ -33,7 +33,7 @@ export const liveDot = css`
 
 export const sessionProgress = css`
   height: 5px;
-  background: #333e27;
+  background: var(--surface-selected);
   border-radius: 3px;
   overflow: hidden;
   & > span {
@@ -45,7 +45,7 @@ export const sessionProgress = css`
 
 export const notesLabel = css`
   display: block;
-  color: #c3d1b1;
+  color: var(--text-secondary);
   font-size: 14px;
   margin-top: 23px;
   & textarea {
@@ -54,7 +54,7 @@ export const notesLabel = css`
 `;
 
 export const saveSession = css`
-  border-top: 1px solid #39432d;
+  border-top: 1px solid var(--line-strong);
   padding-top: 20px;
   margin-top: 20px;
   display: flex;
@@ -64,7 +64,7 @@ export const saveSession = css`
   & p {
     font-size: 13px;
     line-height: 1.6;
-    color: #9eaf8a;
+    color: var(--muted);
     max-width: 260px;
   }
   @media (max-width: 760px) {

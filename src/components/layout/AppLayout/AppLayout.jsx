@@ -25,6 +25,7 @@ import {
   ChevronRight,
   History,
   LogOut,
+  Palette,
   TrendingUp,
 } from "lucide-react";
 import { Brand } from "../Brand/Brand.jsx";
@@ -35,6 +36,7 @@ export function AppLayout({
   user,
   signingOut,
   logout,
+  onAppearance,
   children,
 }) {
   return (
@@ -108,6 +110,15 @@ export function AppLayout({
             <span className={`${avatar} avatar`} title={user.email}>
               {user.email?.slice(0, 2).toUpperCase() || "YOU"}
             </span>
+            {user && (
+              <IconButton
+                aria-label="Appearance"
+                title="Appearance"
+                onClick={onAppearance}
+              >
+                <Palette size={18} />
+              </IconButton>
+            )}
             {user && (
               <IconButton
                 className="signout-button"

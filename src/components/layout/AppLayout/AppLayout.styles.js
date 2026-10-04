@@ -37,7 +37,7 @@ export const sidebar = css`
   position: fixed;
   inset: 0 auto 0 0;
   border-right: 1px solid var(--line);
-  background: #161815;
+  background: var(--sidebar);
   display: flex;
   flex-direction: column;
   padding: 35px 20px;
@@ -64,8 +64,8 @@ export const sidebar = css`
       padding: 5px 15px max(5px, env(safe-area-inset-bottom));
       z-index: 5;
       border-right: 0;
-      border-top: 1px solid #3b432e;
-      background: #181d15f5;
+      border-top: 1px solid var(--line-strong);
+      background: var(--mobile-nav);
       backdrop-filter: blur(12px);
     }
     & nav {
@@ -95,7 +95,7 @@ export const sidebar = css`
 
 export const workspaceLabel = css`
   letter-spacing: 1.6px;
-  color: #767d6e;
+  color: var(--text-subtle);
   margin: 57px 13px 18px;
   font-weight: 700;
   @media (max-width: 1020px) {
@@ -117,11 +117,11 @@ export const navItem = css`
   gap: 12px;
   padding: 14px 13px;
   border-radius: 7px;
-  color: #a6ac9e;
+  color: var(--muted);
   font-size: 14px;
   margin: 5px 0;
   &.active {
-    background: #2a3020;
+    background: var(--surface-raised);
     color: var(--accent);
   }
   @media (max-width: 1020px) {
@@ -180,7 +180,7 @@ export const sidebarBottom = css`
       600 18px/1.5 Manrope,
       sans-serif;
     margin-top: 13px;
-    color: #c6cbbd;
+    color: var(--text-secondary);
   }
   @media (max-width: 1020px) {
     & {
@@ -197,7 +197,7 @@ export const miniBars = css`
   margin: 23px 0 26px;
   & i {
     width: 13px;
-    background: #363e25;
+    background: var(--surface-selected);
     border-radius: 2px 2px 0 0;
   }
   & i:last-child {
@@ -208,14 +208,14 @@ export const miniBars = css`
 export const localLabel = css`
   padding-top: 21px;
   border-top: 1px solid var(--line);
-  color: #969e89;
+  color: var(--muted);
   display: flex;
   align-items: center;
   gap: 7px;
   & span {
     width: 5px;
     height: 5px;
-    background: #adba89;
+    background: var(--chart-bar);
     border-radius: 50%;
   }
   & {
@@ -267,9 +267,9 @@ export const desktopBreadcrumb = css`
   gap: 13px;
   align-items: center;
   font-size: 13px;
-  color: #777f70;
+  color: var(--text-subtle);
   & strong {
-    color: #bcc2b4;
+    color: var(--text-secondary);
     font-weight: 500;
   }
   @media (max-width: 760px) {
@@ -282,12 +282,12 @@ export const desktopBreadcrumb = css`
 export const avatar = css`
   display: grid;
   place-items: center;
-  border: 1px solid #474d3b;
+  border: 1px solid var(--line-strong);
   border-radius: 50%;
   width: 34px;
   height: 34px;
-  background: #272d1e;
-  color: #d3dec0;
+  background: var(--surface-raised);
+  color: var(--text);
   font-size: 10px;
   font-weight: 700;
   @media (max-width: 760px) {
@@ -334,7 +334,7 @@ export const pageFooter = css`
   justify-content: space-between;
   gap: 20px;
   font-size: 9px;
-  color: #6d7960;
+  color: var(--text-subtle);
   margin-top: 32px;
   & span:first-child {
     letter-spacing: 1.1px;

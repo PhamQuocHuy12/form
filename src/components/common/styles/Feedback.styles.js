@@ -2,9 +2,9 @@ import { css } from "@linaria/core";
 
 export const errorBanner = css`
   padding: 14px;
-  background: #422a24;
-  color: #ffcec0;
-  border: 1px solid #88513e;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-line);
   border-radius: 8px;
   margin-bottom: 20px;
   & button {
@@ -26,11 +26,11 @@ export const toast = css`
   left: calc(50% + 100px);
   transform: translateX(-50%);
   padding: 15px 22px;
-  border: 1px solid #7b9251;
-  background: #2e3b20;
-  box-shadow: 0 8px 30px #0008;
+  border: 1px solid var(--line-accent);
+  background: var(--surface-raised);
+  box-shadow: 0 8px 30px var(--shadow);
   border-radius: 9px;
-  color: #e3f5c6;
+  color: var(--text);
   font-size: 14px;
   z-index: 30;
   display: flex;

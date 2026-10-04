@@ -4,7 +4,8 @@ export const authPage = css`
   min-height: 100dvh;
   padding: 32px 7vw;
   background:
-    radial-gradient(ellipse at 10% 20%, #25301b, transparent 55%), #121412;
+    radial-gradient(ellipse at 10% 20%, var(--surface-raised), transparent 55%),
+    var(--bg);
   @media (max-width: 760px) {
     & {
       padding: 24px 19px;
@@ -56,7 +57,7 @@ export const authIntro = css`
   }
   & > p {
     font-size: 17px;
-    color: #aebda0;
+    color: var(--text-secondary);
     line-height: 1.9;
     max-width: 430px;
     margin-bottom: 35px;
@@ -81,7 +82,7 @@ export const authBenefit = css`
   align-items: center;
   gap: 12px;
   font-size: 15px;
-  color: #d5e3c3;
+  color: var(--text);
   margin: 18px 0;
   & svg {
     color: var(--accent);
@@ -94,11 +95,11 @@ export const authBenefit = css`
 `;
 
 export const authCard = css`
-  border: 1px solid #414d32;
+  border: 1px solid var(--line-strong);
   border-radius: 16px;
   padding: 34px;
-  background: #1d2519;
-  box-shadow: 0 25px 80px #0004;
+  background: var(--surface-muted);
+  box-shadow: 0 25px 80px var(--shadow-soft);
   & h2 {
     font:
       700 27px Manrope,
@@ -106,7 +107,7 @@ export const authCard = css`
     letter-spacing: -0.7px;
   }
   & > p {
-    color: #a4b691;
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.8;
     margin: 12px 0 28px;
@@ -114,7 +115,7 @@ export const authCard = css`
   & label {
     display: block;
     font-size: 14px;
-    color: #c9d8b9;
+    color: var(--text-secondary);
     margin: 19px 0;
   }
   & input {
@@ -138,8 +139,8 @@ export const authCard = css`
 export const authLock = css`
   display: grid;
   place-items: center;
-  background: #344126;
-  border: 1px solid #52653b;
+  background: var(--surface-selected);
+  border: 1px solid var(--line-accent);
   border-radius: 11px;
   width: 46px;
   height: 46px;
@@ -156,7 +157,7 @@ export const authLock = css`
 
 export const authTextButton = css`
   background: transparent;
-  color: #cbdfab;
+  color: var(--text-secondary);
   font-size: 13px;
   padding: 0;
   display: block;
@@ -164,11 +165,11 @@ export const authTextButton = css`
 `;
 
 export const authSwitch = css`
-  border-top: 1px solid #3e4d30;
+  border-top: 1px solid var(--line-strong);
   text-align: center;
   padding-top: 24px;
   margin-top: 25px;
-  color: #aabd96;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.7;
   & button {
@@ -180,14 +181,14 @@ export const authSwitch = css`
 `;
 
 export const authMessage = css`
-  background: #2c3c21;
-  border: 1px solid #4f6839;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-accent);
   border-radius: 7px;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  color: #d3e8b9;
+  color: var(--text);
   line-height: 1.7;
   padding: 14px;
 `;

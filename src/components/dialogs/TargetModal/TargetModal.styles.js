@@ -6,7 +6,7 @@ export const targetInputs = css`
   gap: 14px;
   & label {
     font-size: 14px;
-    color: #c7d1b9;
+    color: var(--text-secondary);
   }
   & input {
     margin-top: 9px;
@@ -29,12 +29,12 @@ export const suggestionNote = css`
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #2d3822;
-  border: 1px solid #41522f;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
   padding: 14px;
   font-size: 13px;
   line-height: 1.6;
-  color: #c5dba5;
+  color: var(--text-secondary);
   margin-bottom: 24px;
 `;

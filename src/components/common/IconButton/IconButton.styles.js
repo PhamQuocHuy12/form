@@ -7,5 +7,5 @@ export const iconButton = css`
   height: 40px;
   background: transparent;
   border-radius: 6px;
-  color: #a7b595;
+  color: var(--text-secondary);
 `;

@@ -5,13 +5,13 @@ export const dayOptions = css`
   gap: 12px;
   & button {
     padding: 20px 8px;
-    background: #262e1f;
-    border: 1px solid #3c482e;
+    background: var(--surface-raised);
+    border: 1px solid var(--line-strong);
     flex: 1;
     border-radius: 9px;
   }
   & .chosen {
-    background: #364224;
+    background: var(--surface-selected);
     border-color: var(--accent);
     color: var(--accent);
   }
@@ -22,7 +22,7 @@ export const dayOptions = css`
   }
   & span {
     font-size: 12px;
-    color: #a9b599;
+    color: var(--text-secondary);
   }
   @media (max-width: 760px) {
     & span {
@@ -46,13 +46,13 @@ export const weekdayOptions = css`
   & button {
     min-height: 44px;
     padding: 10px 4px;
-    background: #262e1f;
-    border: 1px solid #3c482e;
+    background: var(--surface-raised);
+    border: 1px solid var(--line-strong);
     border-radius: 8px;
     font-size: 13px;
   }
   & .chosen {
-    background: #364224;
+    background: var(--surface-selected);
     border-color: var(--accent);
     color: var(--accent);
   }
@@ -76,7 +76,7 @@ export const schedulePreview = css`
     justify-content: space-between;
     gap: 12px;
     padding: 8px 0;
-    border-bottom: 1px solid #333d2a;
+    border-bottom: 1px solid var(--line);
     font-size: 12px;
   }
   & span {
@@ -102,7 +102,7 @@ export const strategyOptions = css`
     display: block;
     font-size: 13px;
     line-height: 1.6;
-    color: #9ba88b;
+    color: var(--muted);
     margin-top: 4px;
   }
   @media (max-width: 760px) {

@@ -15,20 +15,20 @@ export const weekStrip = css`
 
 export const dayTile = css`
   text-align: left;
-  background: #1c1f19;
-  border: 1px solid #32362c;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
   border-radius: 9px;
   padding: 13px 14px 12px;
   position: relative;
   min-width: 0;
   &.selected {
-    background: #e8fc73;
-    color: #1d2410;
-    border-color: #e8fc73;
+    background: var(--accent);
+    color: var(--ink);
+    border-color: var(--accent);
   }
   &.rest {
-    background: #171a16;
-    border-color: #282d23;
+    background: var(--surface-muted);
+    border-color: var(--line);
   }
   & > strong {
     font:
@@ -61,7 +61,7 @@ export const dayTile = css`
     opacity: 1;
   }
   &.rest {
-    color: #8e9883;
+    color: var(--muted);
   }
 `;
 
@@ -70,9 +70,9 @@ export const dayTop = css`
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  color: #a0a890;
+  color: var(--muted);
   .selected & {
-    color: #546229;
+    color: var(--ink-muted);
   }
   @media (max-width: 760px) {
     & {
@@ -122,9 +122,9 @@ export const dayFooter = css`
   gap: 5px;
   align-items: center;
   margin-top: 11px;
-  color: #8d9681;
+  color: var(--muted);
   .selected & {
-    color: #5b6836;
+    color: var(--ink-muted);
   }
   @media (max-width: 1020px) {
     & span {
@@ -152,6 +152,6 @@ export const dayFooter = css`
     }
   }
   .rest & {
-    color: #8e9883;
+    color: var(--muted);
   }
 `;
