@@ -1,5 +1,3 @@
-import { Dumbbell, Pause } from "lucide-react";
-
 export const MUSCLES = ["Chest", "Back", "Shoulders", "Arms", "Legs", "Core"];
 export const MAX_EXERCISES = 8;
 const ex = (id, name, muscle, equipment, sets, min, max, rest, tip) => ({

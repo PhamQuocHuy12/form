@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import { MAX_EXERCISES, EXERCISES } from "../catalog/exercises.mjs";
 import { PLANS } from "../catalog/plans.mjs";
 import { monday, isDateKey } from "../utils/dates.mjs";

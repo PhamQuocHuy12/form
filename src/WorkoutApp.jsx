@@ -1,7 +1,7 @@
 import {
   errorBanner,
   loading,
-  toast,
+  toast as toastClass,
 } from "./components/common/styles/Feedback.styles.js";
 import React, { useState, useCallback } from "react";
 import { Check } from "lucide-react";
@@ -133,7 +133,7 @@ export function WorkoutApp({ store, user }) {
         <AppearanceModal controller={appearance} onClose={closeAppearance} />
       )}
       {toast && (
-        <div className={`${toast} toast`} role="status">
+        <div className={`${toastClass} toast`} role="status">
           <Check size={18} />
           {toast}
         </div>
