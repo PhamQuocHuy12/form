@@ -1901,6 +1901,38 @@ button:disabled {
   display: block;
   background: var(--accent);
 }
+.draft-recovery {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #455635;
+  border-radius: 9px;
+  background: #252f1e;
+}
+.draft-recovery strong {
+  font-size: 15px;
+  color: #d6e5bf;
+}
+.draft-recovery p {
+  margin: 7px 0;
+  font-size: 13px;
+  color: #b1c397;
+}
+.draft-recovery small {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #a4b38f;
+}
+.draft-recovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
 .rest-timer {
   display: flex;
   align-items: center;
@@ -1979,6 +2011,58 @@ summary::-webkit-details-marker {
   line-height: 1.6;
   color: #9dab8e;
   margin-bottom: 17px;
+}
+.last-performance {
+  margin-bottom: 17px;
+  padding: 12px;
+  border: 1px solid #39442f;
+  border-radius: 7px;
+  background: #20291b;
+}
+.last-performance-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 12px;
+}
+.last-performance-heading > strong {
+  font-size: 13px;
+  color: #c8df9f;
+}
+.last-performance-heading > span,
+.last-performance > p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #a4b38f;
+}
+.last-performance > p {
+  margin: 6px 0 0;
+}
+.last-performance-sets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+.last-performance-sets li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  background: #2b3523;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.last-performance-sets li > span {
+  color: #a4b38f;
+}
+.last-performance-sets li > strong {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 .set-grid {
   display: grid;
@@ -2435,6 +2519,218 @@ summary::-webkit-details-marker {
   font-size: 14px;
   text-decoration: underline;
   text-underline-offset: 5px;
+}
+.exercise-progress-card {
+  padding: 25px;
+  margin: 25px 0;
+  border: 1px solid #39472c;
+  background: #1c2318;
+  border-radius: 11px;
+  min-width: 0;
+}
+.exercise-progress-toolbar,
+.exercise-progress-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.exercise-progress-toolbar > div:first-child {
+  flex: 1 1 250px;
+}
+.exercise-progress-toolbar h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.exercise-progress-toolbar p,
+.exercise-progress-period,
+.single-progress-hint {
+  font-size: 13px;
+  color: #9eb18a;
+  line-height: 1.7;
+  margin-top: 8px;
+}
+.exercise-progress-controls {
+  flex: 1 1 360px;
+}
+.exercise-progress-controls label {
+  min-width: 0;
+  flex: 1 1 150px;
+  font-size: 12px;
+  color: #b7c6a4;
+}
+.exercise-progress-controls label:first-child {
+  flex-basis: 220px;
+}
+.exercise-progress-controls select {
+  width: 100%;
+  margin-top: 7px;
+  min-width: 0;
+}
+.exercise-progress-period {
+  margin: 16px 0;
+}
+.exercise-trend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.exercise-trend {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #39472c;
+  border-radius: 9px;
+  background: #20291b;
+}
+.exercise-trend-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+.exercise-trend-heading h4 {
+  font-size: 13px;
+  color: #b7c6a4;
+  font-weight: 500;
+}
+.exercise-trend-heading strong {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.exercise-trend.reps .exercise-trend-heading strong {
+  color: #b0dce7;
+}
+.exercise-trend-plot {
+  width: 100%;
+  display: block;
+  overflow: visible;
+  margin-top: 14px;
+}
+.exercise-trend-plot text {
+  fill: #a4b38f;
+  font-size: 12px;
+}
+.trend-gridline {
+  stroke: #3b4830;
+  stroke-width: 1;
+}
+.trend-line {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.trend-point {
+  fill: #20291b;
+  stroke: var(--accent);
+  stroke-width: 2;
+  cursor: pointer;
+}
+.trend-point.selected {
+  fill: var(--accent);
+}
+.trend-point-control:focus-visible {
+  outline: none;
+}
+.trend-point-control:focus-visible .trend-point {
+  stroke: #ffffff;
+  stroke-width: 3;
+}
+.reps .trend-line,
+.reps .trend-point {
+  stroke: #b0dce7;
+}
+.reps .trend-point.selected {
+  fill: #b0dce7;
+}
+.exercise-trend-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 18px;
+  padding: 16px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #a4b38f;
+}
+.exercise-trend-selection strong {
+  color: #d6edab;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.bodyweight-trend,
+.empty-exercise-progress {
+  padding: 40px 15px;
+  color: #a4b38f;
+  text-align: center;
+  line-height: 1.7;
+  font-size: 13px;
+}
+.bodyweight-trend strong {
+  display: block;
+  color: #d6edab;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.empty-exercise-progress {
+  border: 1px dashed #455635;
+  border-radius: 9px;
+}
+.exercise-progress-data {
+  border-top: 1px solid #39472c;
+}
+.exercise-progress-data summary {
+  padding: 14px 0;
+  font-size: 13px;
+  color: #d5eca9;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.exercise-progress-table-wrap {
+  overflow-x: auto;
+}
+.exercise-progress-data table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+.exercise-progress-data th,
+.exercise-progress-data td {
+  padding: 12px 10px;
+  border-top: 1px solid #39472c;
+  line-height: 1.6;
+}
+.exercise-progress-data th {
+  color: #b7c6a4;
+  font-weight: 500;
+}
+.exercise-progress-data td {
+  color: #d6e5bf;
+}
+@media (max-width: 760px) {
+  .exercise-progress-card {
+    padding: 18px;
+  }
+  .exercise-progress-controls {
+    flex-basis: 100%;
+    gap: 12px;
+  }
+  .exercise-progress-controls label,
+  .exercise-progress-controls label:first-child {
+    flex-basis: 100%;
+  }
+  .exercise-trend-grid {
+    grid-template-columns: 1fr;
+  }
+  .exercise-trend {
+    padding: 12px;
+  }
+  .exercise-trend-plot text {
+    font-size: 18px;
+  }
 }
 .record-grid {
   display: grid;

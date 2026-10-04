@@ -20,7 +20,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import {
-  PLANS,
   MUSCLES,
   dateKey,
   monday,
@@ -35,6 +34,7 @@ import {
   SessionModal,
   ExercisePlanModal,
   DeleteWorkoutModal,
+  DiscardDraftModal,
   createSession,
   HistoryView,
   ProgressView,
@@ -42,6 +42,7 @@ import {
 import { auth, db, firebaseConfigurationError } from "./firebase-config.js";
 import { AuthScreen, authError } from "./auth.jsx";
 import { createCloudStore, emptyTrainingState } from "./training-store.js";
+import { useWorkoutDraft } from "./use-workout-draft.js";
 
 const weekdayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const formatDate = (key, options) =>
@@ -68,19 +69,12 @@ function App({ store, user }) {
   const [routineDay, setRoutineDay] = useState(null);
   const [editingWorkout, setEditingWorkout] = useState(null);
   const [deletingWorkout, setDeletingWorkout] = useState(null);
-  const draftKey = `form-session:${user.uid}`;
-  const [session, setSession] = useState(() => {
-    try {
-      const draft = JSON.parse(sessionStorage.getItem(draftKey));
-      return draft?.id &&
-        Array.isArray(draft.exercises) &&
-        PLANS[draft.days]?.some((d) => d.id === draft.dayId)
-        ? draft
-        : null;
-    } catch {
-      return null;
-    }
-  });
+  const {
+    session,
+    setSession,
+    warning: draftWarning,
+  } = useWorkoutDraft(user.uid);
+  const [discardDraftOpen, setDiscardDraftOpen] = useState(false);
   const [sessionOpen, setSessionOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [signingOut, setSigningOut] = useState(false);
@@ -91,6 +85,13 @@ function App({ store, user }) {
   const closeRoutine = useCallback(() => setRoutineDay(null), []);
   const closeEditWorkout = useCallback(() => setEditingWorkout(null), []);
   const closeDeleteWorkout = useCallback(() => setDeletingWorkout(null), []);
+  const closeDiscardDraft = useCallback(() => setDiscardDraftOpen(false), []);
+  useEffect(() => {
+    if (!session) {
+      setSessionOpen(false);
+      setDiscardDraftOpen(false);
+    }
+  }, [session]);
   useEffect(() => {
     setLoaded(false);
     setError("");
@@ -108,15 +109,7 @@ function App({ store, user }) {
         setLoaded(false);
       },
     );
-  }, [store, retry]);
-  useEffect(() => {
-    try {
-      if (session) sessionStorage.setItem(draftKey, JSON.stringify(session));
-      else sessionStorage.removeItem(draftKey);
-    } catch {
-      /* Completed workouts still use the database. */
-    }
-  }, [session, draftKey]);
+  }, [store, retry, setSession]);
   useEffect(() => {
     if (toast) {
       const timeout = setTimeout(() => setToast(""), 5000);
@@ -140,7 +133,7 @@ function App({ store, user }) {
       ...s,
       workouts: [saved, ...s.workouts.filter((w) => w.id !== saved.id)],
     }));
-    setSession(null);
+    setSession((draft) => (draft?.id === saved.id ? null : draft));
     setSessionOpen(false);
     setToast(
       saved.status === "completed"
@@ -202,6 +195,12 @@ function App({ store, user }) {
   );
   const count = plan.filter((d) => completedDays.has(d.id)).length;
   const legDay = workout.exercises.some((e) => e.muscle === "Legs");
+  const draftSetsLogged =
+    session?.exercises.reduce(
+      (count, exercise) =>
+        count + exercise.sets.filter((set) => set.done).length,
+      0,
+    ) ?? 0;
   useEffect(() => {
     const context = document.modelContext;
     if (!loaded || !context?.registerTool) return;
@@ -363,6 +362,45 @@ function App({ store, user }) {
                 Retry
               </button>
             </div>
+          )}
+          {draftWarning && (
+            <div role="alert" className="error-banner">
+              {draftWarning}
+            </div>
+          )}
+          {loaded && session && (
+            <section className="draft-recovery" aria-label="Unfinished workout">
+              <div>
+                <strong>Unfinished workout · {session.title}</strong>
+                <p>
+                  Week of{" "}
+                  {formatDate(session.week, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  {" · "}
+                  {draftSetsLogged} {draftSetsLogged === 1 ? "set" : "sets"}{" "}
+                  logged
+                </p>
+                <small>
+                  {draftWarning
+                    ? "Keep this tab open until you save."
+                    : "Saved in this browser. You can close it and continue later."}
+                </small>
+              </div>
+              <div className="draft-recovery-actions">
+                <button className="button primary" onClick={startWorkout}>
+                  Continue saved workout
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() => setDiscardDraftOpen(true)}
+                >
+                  Discard draft
+                </button>
+              </div>
+            </section>
           )}
           {!loaded ? (
             error ? null : (
@@ -778,10 +816,25 @@ function App({ store, user }) {
       )}
       {sessionOpen && session && (
         <SessionModal
+          key={session.id}
           session={session}
           setSession={setSession}
           save={saveWorkout}
           onClose={closeSession}
+          workouts={state.workouts}
+          draftWarning={draftWarning}
+        />
+      )}
+      {discardDraftOpen && session && (
+        <DiscardDraftModal
+          session={session}
+          onClose={closeDiscardDraft}
+          discard={() => {
+            setSession(null);
+            setSessionOpen(false);
+            setDiscardDraftOpen(false);
+            setToast("Unfinished workout discarded.");
+          }}
         />
       )}
       {toast && (

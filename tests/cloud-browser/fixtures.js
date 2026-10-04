@@ -39,6 +39,7 @@ export const test = base.extend({
     try {
       await use({
         ...account,
+        uid,
         store,
         async load() {
           const [settings, targets, workouts, routines] = await Promise.all([

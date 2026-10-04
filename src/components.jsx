@@ -28,6 +28,7 @@ import {
   MUSCLES,
   MAX_EXERCISES,
   prescriptions,
+  lastExercisePerformance,
   records,
   volume,
   shiftDate,
@@ -35,6 +36,7 @@ import {
   trainingPlan,
 } from "../shared/training.mjs";
 import { useExerciseDrag } from "./use-exercise-drag.js";
+import { ExerciseProgress } from "./exercise-progress.jsx";
 
 export function Modal({ title, onClose, children, wide = false }) {
   const panel = useRef(null);
@@ -547,6 +549,26 @@ export function DeleteWorkoutModal({ workout, remove, onClose }) {
     </Modal>
   );
 }
+export function DiscardDraftModal({ session, discard, onClose }) {
+  return (
+    <Modal title="Discard unfinished workout?" onClose={onClose}>
+      <p>
+        This removes your unfinished{" "}
+        <strong className="bright">{session.title}</strong> workout, including
+        its sets and notes. Saved workout history is kept.
+      </p>
+      <div className="history-actions">
+        <button className="button secondary" onClick={onClose}>
+          Keep workout
+        </button>
+        <button className="button danger" onClick={discard}>
+          <Trash2 size={17} />
+          Discard unfinished workout
+        </button>
+      </div>
+    </Modal>
+  );
+}
 export function TargetModal({ exercise, target, week, save, onClose }) {
   const [draft, setDraft] = useState({
     sets: target.sets,
@@ -670,6 +692,8 @@ export function SessionModal({
   save,
   onClose,
   editing = false,
+  workouts = [],
+  draftWarning = "",
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -759,8 +783,15 @@ export function SessionModal({
       <p className="form-hint">
         {editing
           ? `Correct your sets, weights, reps, and notes. Originally logged ${new Date(session.finishedAt).toLocaleDateString()}.`
-          : "Enter what you actually lift, then check off each set. Your unfinished session stays in this tab when you close it."}
+          : draftWarning
+            ? "Enter what you actually lift, then check off each set. Keep this workout open until you save."
+            : "Enter what you actually lift, then check off each set. Your draft saves automatically in this browser so you can close it and continue later."}
       </p>
+      {!editing && draftWarning && (
+        <p role="alert" className="form-error">
+          {draftWarning}
+        </p>
+      )}
       {!editing && (
         <div className="rest-timer">
           <Clock3 size={18} />
@@ -803,6 +834,9 @@ export function SessionModal({
           {session.exercises.map((e, i) => {
             const exercise = EXERCISES[e.id];
             const allDone = e.sets.every((s) => s.done);
+            const previous = editing
+              ? null
+              : lastExercisePerformance(e.id, session, workouts);
             return (
               <details className="log-exercise" key={e.id} open>
                 <summary>
@@ -823,6 +857,49 @@ export function SessionModal({
                 </summary>
                 <div className="log-exercise-body">
                   <p>{exercise.tip}</p>
+                  {!editing && (
+                    <section
+                      className="last-performance"
+                      aria-label={`Last time for ${exercise.name}`}
+                    >
+                      <div className="last-performance-heading">
+                        <strong>Last time</strong>
+                        {previous && (
+                          <span>
+                            <time dateTime={previous.finishedAt}>
+                              {new Date(previous.finishedAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )}
+                            </time>
+                            {previous.status === "partial" &&
+                              " · Partial workout"}
+                          </span>
+                        )}
+                      </div>
+                      {previous ? (
+                        <ul className="last-performance-sets">
+                          {previous.sets.map((set) => (
+                            <li key={set.number}>
+                              <span>Set {set.number}</span>
+                              <strong>
+                                {set.weight === null || set.weight === 0
+                                  ? "BW"
+                                  : `${set.weight} kg`}{" "}
+                                × {set.reps} reps
+                              </strong>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No previous logged sets.</p>
+                      )}
+                    </section>
+                  )}
                   <div className="set-grid set-labels">
                     <span>SET</span>
                     <span>KG</span>
@@ -1257,6 +1334,11 @@ export function ProgressView({ state, week, onPlan, onSettings }) {
           </button>
         </section>
       </div>
+      <ExerciseProgress
+        workouts={state.workouts}
+        week={week}
+        defaultExerciseId={prs[0]?.id || unique[0]}
+      />
       <section className="records-card">
         <div className="view-toolbar">
           <div>
